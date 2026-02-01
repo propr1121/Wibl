@@ -94,8 +94,13 @@ pnpm build
 
 pnpm clawdbot onboard --install-daemon
 
-# Dev loop (auto-reload on TS changes)
-pnpm gateway:watch
+# Start Wibl Portal (default dev target)
+pnpm dev
+# Opens at http://localhost:3000
+
+# Start Clawdbot Gateway (if needed)
+pnpm clawdbot:dev
+# or: pnpm gateway:watch (auto-reload on TS changes)
 ```
 
 Note: `pnpm clawdbot ...` runs TypeScript directly (via `tsx`). `pnpm build` produces `dist/` for running via Node / the packaged `clawdbot` binary.
