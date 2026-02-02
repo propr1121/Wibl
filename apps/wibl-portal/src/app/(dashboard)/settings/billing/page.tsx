@@ -34,8 +34,11 @@ export default function BillingPage() {
     const supabase = createClient();
 
     useHeaderConfig({
-        title: 'Billing & Subscription',
-        breadcrumbs: [{ label: 'Settings', href: '/settings' }],
+        breadcrumbs: [
+            { label: 'Overview', href: '/dashboard' },
+            { label: 'Settings', href: '/settings' },
+            { label: 'Billing', href: '/settings/billing' }
+        ],
     });
 
     useEffect(() => {
@@ -131,9 +134,19 @@ export default function BillingPage() {
     const currentPlanKey = subscription?.plan_name || 'starter';
 
     return (
-        <div className="space-y-10 pb-20 max-w-[1200px] mx-auto animate-reveal">
-            {/* Background Decor */}
-            <div className="absolute top-[-5%] right-[-5%] w-[400px] h-[400px] bg-wibl-teal/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="space-y-12 pb-20 max-w-[1200px] mx-auto animate-reveal relative overflow-hidden">
+            {/* Background Orbs for Premium feel */}
+            <div className="absolute top-[-5%] right-[-10%] w-[600px] h-[600px] bg-wibl-teal/5 rounded-full blur-[140px] pointer-events-none orb-animated" />
+
+            {/* Billing Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-wibl-teal uppercase tracking-[0.3em] mb-1">Financial Management</p>
+                    <h1 className="text-3xl lg:text-4xl font-display font-black text-navy-900 tracking-tighter">
+                        Billing & <span className="text-gradient">Subscription.</span>
+                    </h1>
+                </div>
+            </div>
 
             {/* Current Plan Overview - Premium Architecture */}
 

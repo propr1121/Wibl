@@ -11,14 +11,24 @@ import { TrendingUp, Users, Zap, Clock } from 'lucide-react';
 
 export default function AnalyticsPage() {
     useHeaderConfig({
-        title: 'Intelligence Analytics',
         breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Analytics', href: '/analytics' }],
     });
 
     return (
-        <div className="space-y-10 pb-20 max-w-[1400px] mx-auto relative animate-reveal">
-            {/* Background Orbs */}
-            <div className="absolute top-[-10%] left-[-5%] w-[400px] h-[400px] bg-wibl-teal/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="space-y-12 pb-20 max-w-[1400px] mx-auto relative overflow-hidden animate-reveal">
+            {/* Background Orbs for Premium feel */}
+            <div className="absolute top-[-5%] right-[-10%] w-[600px] h-[600px] bg-wibl-teal/5 rounded-full blur-[140px] pointer-events-none orb-animated" />
+            <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-wibl-mint/5 rounded-full blur-[120px] pointer-events-none orb-animated-slow" />
+
+            {/* Analytics Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-wibl-teal uppercase tracking-[0.3em] mb-1">Performance Insight</p>
+                    <h1 className="text-3xl lg:text-4xl font-display font-black text-navy-900 tracking-tighter">
+                        Intelligence <span className="text-gradient">Analytics.</span>
+                    </h1>
+                </div>
+            </div>
 
             {/* Metrics Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">

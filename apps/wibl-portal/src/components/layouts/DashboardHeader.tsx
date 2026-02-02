@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 interface DashboardHeaderProps {
-    title: string;
+    title?: string;
     breadcrumbs?: { label: string; href?: string }[];
     actions?: React.ReactNode;
     onMenuClick?: () => void;
@@ -136,9 +136,11 @@ export function DashboardHeader({
                             )}
 
                             {/* Page title */}
-                            <h1 className="text-2xl md:text-3xl font-display font-black text-navy-700 truncate">
-                                {title}
-                            </h1>
+                            {title && (
+                                <h1 className="text-2xl md:text-3xl font-display font-black text-navy-700 truncate">
+                                    {title}
+                                </h1>
+                            )}
                         </div>
                     </div>
 

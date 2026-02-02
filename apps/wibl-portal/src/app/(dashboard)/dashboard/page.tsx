@@ -80,8 +80,7 @@ export default function DashboardPage() {
     const chartContainerRef = useRef<HTMLDivElement>(null);
 
     useHeaderConfig({
-        title: 'Overview',
-        breadcrumbs: [],
+        breadcrumbs: [{ label: 'Overview', href: '/dashboard' }],
     });
 
     useEffect(() => {
@@ -98,14 +97,15 @@ export default function DashboardPage() {
     if (!mounted) return null;
 
     return (
-        <div className="space-y-10 pb-20 max-w-[1600px] mx-auto relative overflow-hidden">
+        <div className="space-y-12 pb-20 max-w-[1600px] mx-auto relative overflow-hidden">
             {/* Background Orbs for Premium feel */}
-            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-wibl-teal/5 rounded-full blur-[120px] pointer-events-none orb-animated" />
-            <div className="absolute bottom-[20%] left-[-5%] w-[400px] h-[400px] bg-wibl-mint/5 rounded-full blur-[100px] pointer-events-none orb-animated-slow" />
+            <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-wibl-teal/5 rounded-full blur-[140px] pointer-events-none orb-animated" />
+            <div className="absolute bottom-[20%] left-[-5%] w-[500px] h-[500px] bg-wibl-mint/5 rounded-full blur-[120px] pointer-events-none orb-animated-slow" />
 
             {/* Top Section: Simplified Header (Clean & Focused) */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 animate-reveal">
                 <div className="space-y-1">
+                    <p className="text-[10px] font-black text-wibl-teal uppercase tracking-[0.3em] mb-1">Operational Overview</p>
                     <h1 className="text-4xl lg:text-5xl font-display font-black text-navy-900 tracking-tighter">
                         {getGreeting()}, <span className="text-gradient">John.</span>
                     </h1>

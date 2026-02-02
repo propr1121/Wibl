@@ -59,7 +59,6 @@ const MOCK_AGENTS = [
 
 export default function AgentsPage() {
     useHeaderConfig({
-        title: 'Workforce',
         breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Workforce', href: '/agents' }],
     });
 
@@ -71,9 +70,9 @@ export default function AgentsPage() {
 
             {/* Workforce Management Header */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 animate-reveal">
-                <div className="space-y-2">
-                    <p className="text-[11px] font-black text-wibl-teal uppercase tracking-[0.4em] mb-1">Workforce Intelligence</p>
-                    <h1 className="text-4xl lg:text-5xl font-display font-black text-navy-900 tracking-tighter">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-wibl-teal uppercase tracking-[0.3em] mb-1">Workforce Intelligence</p>
+                    <h1 className="text-3xl lg:text-4xl font-display font-black text-navy-900 tracking-tighter">
                         Manage <span className="text-gradient">Workforce.</span>
                     </h1>
                 </div>
@@ -81,8 +80,8 @@ export default function AgentsPage() {
                     <Button
                         variant="primary"
                         size="lg"
-                        leftIcon={<Plus size={22} />}
-                        className="shadow-glow px-10 h-16 text-lg"
+                        leftIcon={<Plus size={20} />}
+                        className="shadow-glow px-8 h-14"
                     >
                         Create New Agent
                     </Button>
@@ -90,32 +89,32 @@ export default function AgentsPage() {
             </div>
 
             {/* Strategic Workflow - Detoxified Language */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <Card variant="glass" className="p-8 group hover:scale-[1.02] transition-all duration-500 border-navy-50/50">
-                    <div className="w-14 h-14 rounded-2xl bg-wibl-teal/10 flex items-center justify-center mb-6 text-wibl-teal group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-sm">
-                        <Sparkles size={28} />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card variant="glass" className="p-6 group hover:translate-y-[-4px] transition-all duration-500 border-navy-50/40">
+                    <div className="w-12 h-12 rounded-xl bg-wibl-teal/10 flex items-center justify-center mb-5 text-wibl-teal group-hover:scale-110 transition-all duration-500 shadow-sm border border-wibl-teal/10">
+                        <Sparkles size={24} />
                     </div>
-                    <h3 className="text-xl font-display font-black text-navy-900 mb-3 tracking-tight">1. Personality & Role</h3>
-                    <p className="text-[14px] text-navy-500 font-medium leading-relaxed opacity-90">
-                        Define your agent's mission, tone of voice, and operational persona in plain English.
+                    <h3 className="text-lg font-display font-black text-navy-900 mb-2 tracking-tight">1. Personality & Role</h3>
+                    <p className="text-[13px] text-navy-500 font-medium leading-relaxed opacity-80">
+                        Define mission, tone of voice, and operational persona in plain English.
                     </p>
                 </Card>
-                <Card variant="glass" className="p-8 group hover:scale-[1.02] transition-all duration-500 border-navy-50/50">
-                    <div className="w-14 h-14 rounded-2xl bg-wibl-mint/10 flex items-center justify-center mb-6 text-wibl-mint group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-sm">
-                        <Cpu size={28} />
+                <Card variant="glass" className="p-6 group hover:translate-y-[-4px] transition-all duration-500 border-navy-50/40">
+                    <div className="w-12 h-12 rounded-xl bg-wibl-mint/10 flex items-center justify-center mb-5 text-wibl-mint group-hover:scale-110 transition-all duration-500 shadow-sm border border-wibl-mint/10">
+                        <Cpu size={24} />
                     </div>
-                    <h3 className="text-xl font-display font-black text-navy-900 mb-3 tracking-tight">2. Knowledge Library</h3>
-                    <p className="text-[14px] text-navy-500 font-medium leading-relaxed opacity-90">
-                        Upload technical documents, URLs, or spreadsheets to ground your agent in real-world data.
+                    <h3 className="text-lg font-display font-black text-navy-900 mb-2 tracking-tight">2. Knowledge Library</h3>
+                    <p className="text-[13px] text-navy-500 font-medium leading-relaxed opacity-80">
+                        Upload documents or URLs to ground your agent in real-world data.
                     </p>
                 </Card>
-                <Card variant="glass" className="p-8 group hover:scale-[1.02] transition-all duration-500 border-navy-50/50">
-                    <div className="w-14 h-14 rounded-2xl bg-wibl-sky/10 flex items-center justify-center mb-6 text-wibl-sky group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500 shadow-sm">
-                        <Rocket size={28} />
+                <Card variant="glass" className="p-6 group hover:translate-y-[-4px] transition-all duration-500 border-navy-50/40">
+                    <div className="w-12 h-12 rounded-xl bg-wibl-sky/10 flex items-center justify-center mb-5 text-wibl-sky group-hover:scale-110 transition-all duration-500 shadow-sm border border-wibl-sky/10">
+                        <Rocket size={24} />
                     </div>
-                    <h3 className="text-xl font-display font-black text-navy-900 mb-3 tracking-tight">3. Channel Activation</h3>
-                    <p className="text-[14px] text-navy-500 font-medium leading-relaxed opacity-90">
-                        Launch your agent across WhatsApp, Slack, or Web Widgets with a single production click.
+                    <h3 className="text-lg font-display font-black text-navy-900 mb-2 tracking-tight">3. Channel Activation</h3>
+                    <p className="text-[13px] text-navy-500 font-medium leading-relaxed opacity-80">
+                        Launch your agent across WhatsApp or Web with a single production click.
                     </p>
                 </Card>
             </div>
@@ -147,91 +146,85 @@ function AgentListItem({ agent }: { agent: any }) {
             variant="glass"
             padding="none"
             hoverable
-            className="group overflow-hidden border-navy-50/50"
+            className="group overflow-hidden border-navy-50/40 hover:translate-y-[-2px] transition-all duration-300"
         >
             <div className="flex flex-col lg:flex-row lg:items-center">
-                {/* Left: Info */}
-                <div className="p-6 sm:p-8 flex items-center gap-6 flex-1">
+                {/* Left: Identity & Core Info */}
+                <div className="p-5 sm:p-6 flex items-center gap-5 flex-1 min-w-0">
                     <Avatar
                         fallback={agent.initial}
-                        size="xl"
-                        ring
-                        className="shadow-2xl group-hover:scale-105 transition-transform duration-500 hidden sm:flex"
+                        size="lg"
+                        className="shadow-xl group-hover:scale-105 transition-transform duration-500 shrink-0 ring-2 ring-wibl-teal/20"
                     />
                     <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-3 mb-2">
-                            <h3 className="text-2xl font-display font-black text-navy-900 tracking-tighter">
+                        <div className="flex items-center gap-2.5 mb-1 flex-wrap">
+                            <h3 className="text-xl font-display font-black text-navy-900 tracking-tight truncate">
                                 {agent.name}
                             </h3>
-                            <div className="flex gap-2">
-                                <Badge variant={agent.status === 'active' ? 'teal' : 'error'} size="sm" className="font-black uppercase tracking-widest text-[9px]">
-                                    {agent.status === 'active' ? 'Operational' : 'Idle'}
-                                </Badge>
-                                <Badge variant="info" size="sm" className="font-black uppercase tracking-widest text-[9px] bg-navy-50 border-navy-100">
-                                    {agent.type}
-                                </Badge>
-                            </div>
+                            <Badge variant={agent.status === 'active' ? 'teal' : 'error'} size="sm" className="font-black uppercase tracking-widest text-[8px] h-4 leading-none">
+                                {agent.status === 'active' ? 'Operational' : 'Idle'}
+                            </Badge>
                         </div>
                         <div className="flex items-center gap-3">
-                            <p className="text-[11px] font-black text-navy-400 uppercase tracking-widest">ID: {agent.id.padStart(4, '0')}</p>
-                            <span className="w-1 h-1 rounded-full bg-navy-200" />
-                            <div className="flex items-center gap-1.5">
-                                <Activity size={12} className="text-wibl-teal" />
-                                <p className="text-[11px] font-bold text-navy-500 opacity-70">Latency: 240ms</p>
+                            <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest">ID: {agent.id.padStart(4, '0')}</p>
+                            <div className="h-3 w-px bg-navy-100 hidden sm:block" />
+                            <div className="hidden sm:flex items-center gap-1.5">
+                                <Activity size={10} className="text-wibl-teal" />
+                                <p className="text-[10px] font-bold text-navy-400 opacity-80 uppercase tracking-tight">{agent.type}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Center: Intelligence Pipeline */}
-                <div className="px-10 py-8 lg:py-0 flex items-center justify-between lg:justify-center gap-8 xl:gap-14 border-y lg:border-y-0 lg:border-x border-navy-50/50 flex-1 lg:max-w-md">
-                    <div className="flex flex-col items-center gap-2 group/step">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 bg-wibl-teal/10 text-wibl-teal shadow-inner grayscale-0">
-                            <Sparkles size={18} />
+                {/* Center: Intelligence Pipeline (Compact) */}
+                <div className="px-8 py-6 lg:py-0 flex items-center justify-between lg:justify-center gap-8 xl:gap-14 border-y lg:border-y-0 lg:border-x border-navy-50/40 lg:w-[400px]">
+                    <div className="flex flex-col items-center gap-1.5 group/step">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-wibl-teal/5 text-wibl-teal border border-wibl-teal/10">
+                            <Sparkles size={16} />
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-wibl-teal">Role Set</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-wibl-teal opacity-80">Role Set</span>
                     </div>
-                    <div className="flex flex-col items-center gap-2 group/step">
+                    <div className="flex flex-col items-center gap-1.5 group/step">
                         <div className={cn(
-                            "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500",
-                            agent.trained ? "bg-wibl-mint/10 text-wibl-mint" : "bg-navy-50 text-navy-200"
+                            "w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-300",
+                            agent.trained ? "bg-wibl-mint/5 text-wibl-mint border-wibl-mint/10" : "bg-navy-50/50 text-navy-200 border-navy-50"
                         )}>
-                            <Cpu size={18} />
+                            <Cpu size={16} />
                         </div>
                         <span className={cn(
-                            "text-[10px] font-black uppercase tracking-[0.2em]",
-                            agent.trained ? "text-wibl-mint" : "text-navy-300"
-                        )}>Data Ready</span>
+                            "text-[9px] font-black uppercase tracking-widest",
+                            agent.trained ? "text-wibl-mint/80" : "text-navy-300"
+                        )}>Knowledge</span>
                     </div>
-                    <div className="flex flex-col items-center gap-2 group/step">
+                    <div className="flex flex-col items-center gap-1.5 group/step">
                         <div className={cn(
-                            "w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500",
-                            agent.deployed ? "bg-wibl-sky/10 text-wibl-sky shadow-sm shadow-wibl-sky/20" : "bg-navy-50 text-navy-200"
+                            "w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-300",
+                            agent.deployed ? "bg-wibl-sky/5 text-wibl-sky border-wibl-sky/10" : "bg-navy-50/50 text-navy-200 border-navy-50"
                         )}>
-                            <Rocket size={18} />
+                            <Rocket size={16} />
                         </div>
                         <span className={cn(
-                            "text-[10px] font-black uppercase tracking-[0.2em]",
-                            agent.deployed ? "text-wibl-sky" : "text-navy-300"
-                        )}>Connected</span>
+                            "text-[9px] font-black uppercase tracking-widest",
+                            agent.deployed ? "text-wibl-sky/80" : "text-navy-300"
+                        )}>Live</span>
                     </div>
                 </div>
 
-                {/* Right: Telemetry & Actions */}
-                <div className="p-8 flex items-center justify-between lg:justify-end gap-12">
-                    <div className="text-right hidden xl:block">
-                        <p className="text-3xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">{agent.conversations}</p>
-                        <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest mt-1">Chats Managed</p>
+                {/* Right: Telemetry & Navigation */}
+                <div className="p-6 sm:p-7 flex items-center justify-between lg:justify-end gap-10">
+                    <div className="text-right hidden xl:block min-w-[100px]">
+                        <p className="text-2xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">{agent.conversations}</p>
+                        <p className="text-[9px] font-black text-navy-400 uppercase tracking-widest mt-1">Total Chats</p>
                     </div>
 
-                    <div className="flex items-center gap-3 ml-auto lg:ml-0">
+                    <div className="flex items-center gap-2.5 ml-auto lg:ml-0">
                         <Link href={`/agents/${agent.id}`}>
-                            <Button variant="ghost" size="md" className="font-black uppercase tracking-widest text-[10px] px-8 py-4 border-2 hover:bg-navy-900">
+                            <Button variant="ghost" size="sm" className="font-black uppercase tracking-widest text-[9px] px-6 py-3 border border-navy-100 hover:border-navy-900">
                                 View Console
                             </Button>
                         </Link>
-                        <Button variant="ghost" size="md" className="p-3 bg-navy-50 border-transparent hover:bg-navy-100 transition-colors">
-                            <Settings size={22} className="text-navy-400 group-hover:rotate-90 transition-transform duration-500" />
+                        <Button variant="ghost" size="sm" className="p-2.5 bg-navy-50 border-transparent hover:bg-navy-100 transition-colors">
+                            <Settings size={18} className="text-navy-400 group-hover:rotate-90 transition-transform duration-500" />
                         </Button>
                     </div>
                 </div>

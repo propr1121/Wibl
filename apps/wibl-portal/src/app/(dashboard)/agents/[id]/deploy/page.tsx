@@ -174,11 +174,10 @@ export default function AgentDeployPage() {
     });
 
     useHeaderConfig({
-        title: 'Deployment',
         breadcrumbs: [
-            { label: 'Agents', href: '/agents' },
-            { label: 'Agent Details', href: `/agents/${agentId}` },
-            { label: 'Deploy' }
+            { label: 'Overview', href: '/dashboard' },
+            { label: 'Workforce', href: '/agents' },
+            { label: 'Activation', href: `/agents/${agentId}/deploy` }
         ],
     });
 
@@ -206,24 +205,25 @@ export default function AgentDeployPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-12 pb-24">
-            {/* Header */}
-            <div className="flex items-center justify-between animate-fade-in">
-                <div className="flex items-center gap-4">
-                    <Link href={`/agents/${agentId}`}>
-                        <Button variant="ghost" size="sm" leftIcon={<ArrowLeft size={16} />}>
-                            Back to Agent
-                        </Button>
-                    </Link>
-                    <div className="h-8 w-px bg-navy-100 mx-2" />
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-display font-black">
-                            A
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-display font-black text-navy-800">Support Agent</h1>
-                            <Badge variant="warning" size="sm">Draft</Badge>
-                        </div>
+        <div className="max-w-6xl mx-auto space-y-16 pb-24 relative overflow-hidden">
+            {/* Background Orbs */}
+            <div className="absolute top-[-5%] right-[-10%] w-[500px] h-[500px] bg-wibl-sky/5 rounded-full blur-[120px] pointer-events-none orb-animated" />
+
+            {/* Activation Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 animate-reveal">
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-wibl-sky uppercase tracking-[0.3em] mb-1">Production Environment</p>
+                    <h1 className="text-3xl lg:text-4xl font-display font-black text-navy-900 tracking-tighter">
+                        Agent <span className="text-gradient-sky">Activation.</span>
+                    </h1>
+                </div>
+                <div className="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-2 rounded-2xl border border-navy-50 shadow-sm">
+                    <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-display font-black">
+                        {agentId[0].toUpperCase()}
+                    </div>
+                    <div className="pr-4">
+                        <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest">Selected Agent</p>
+                        <p className="text-sm font-black text-navy-900 leading-none">Support Instance</p>
                     </div>
                 </div>
             </div>

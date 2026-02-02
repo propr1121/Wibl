@@ -69,7 +69,6 @@ export default function KnowledgePage() {
     const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
 
     useHeaderConfig({
-        title: 'Library',
         breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Library', href: '/knowledge' }],
     });
 
@@ -96,22 +95,25 @@ export default function KnowledgePage() {
     };
 
     return (
-        <div className="space-y-10 pb-20 max-w-[1400px] mx-auto animate-reveal relative">
-            {/* Background Orbs */}
-            <div className="absolute top-[-5%] right-[-5%] w-[400px] h-[400px] bg-wibl-mint/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="space-y-12 pb-20 max-w-[1400px] mx-auto animate-reveal relative overflow-hidden">
+            {/* Background Orbs for Premium feel */}
+            <div className="absolute top-[-5%] right-[-10%] w-[600px] h-[600px] bg-wibl-mint/5 rounded-full blur-[140px] pointer-events-none orb-animated" />
+            <div className="absolute bottom-[10%] left-[-5%] w-[500px] h-[500px] bg-wibl-teal/5 rounded-full blur-[120px] pointer-events-none orb-animated-slow" />
 
             {/* Header / Intro */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
                 <div className="space-y-1">
-                    <p className="text-[10px] font-black text-navy-400 uppercase tracking-[0.3em]">Intelligence Repository</p>
-                    <h2 className="text-3xl font-display font-black text-navy-900 tracking-tighter">Your Library</h2>
+                    <p className="text-[10px] font-black text-wibl-mint uppercase tracking-[0.3em] mb-1">Intelligence Repository</p>
+                    <h1 className="text-3xl lg:text-4xl font-display font-black text-navy-900 tracking-tighter">
+                        Your <span className="text-gradient-mint">Library.</span>
+                    </h1>
                 </div>
                 <Button
                     variant="primary"
                     size="lg"
                     leftIcon={<Plus size={20} />}
                     onClick={() => setIsUploadModalOpen(true)}
-                    className="shadow-glow px-8"
+                    className="shadow-glow px-8 h-14"
                 >
                     Add Intelligence Asset
                 </Button>

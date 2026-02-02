@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface HeaderConfig {
-    title: string;
+    title?: string;
     breadcrumbs?: { label: string; href?: string }[];
     actions?: React.ReactNode;
 }
@@ -41,7 +41,7 @@ export function useHeaderConfig(config: HeaderConfig) {
 
     useEffect(() => {
         setHeaderConfig({
-            title: config.title,
+            title: config.title || '',
             breadcrumbs: config.breadcrumbs,
             actions: config.actions,
         });
