@@ -55,7 +55,7 @@ export default function ProfilePage() {
                             <h2 className="text-xl font-display font-black text-navy-800">John Doe</h2>
                             <p className="text-sm text-navy-400 font-medium">Chief of Intelligence</p>
                         </div>
-                        <Badge variant="teal" size="lg" className="w-full justify-center py-2 font-black uppercase tracking-widest text-[9px]">
+                        <Badge variant="teal" size="md" className="w-full justify-center py-2 font-black uppercase tracking-widest text-[9px]">
                             Pro Account
                         </Badge>
                     </Card>

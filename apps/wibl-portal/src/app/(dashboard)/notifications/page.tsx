@@ -203,7 +203,7 @@ function NotificationItem({ notification, onDelete }: { notification: Notificati
                     {notification.message}
                 </p>
                 <div className="flex items-center gap-3 pt-2">
-                    <Badge variant="outlined" size="sm" className="bg-white/50 border-navy-100 text-navy-400">
+                    <Badge variant="teal" size="sm" className="bg-white/50 border-navy-100 text-navy-400">
                         {notification.category}
                     </Badge>
                 </div>

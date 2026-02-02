@@ -25,7 +25,7 @@ export default function SupportPage() {
                     </h1>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Badge variant="teal" size="lg" className="px-4 py-2 font-black tracking-widest uppercase">
+                    <Badge variant="teal" size="md" className="px-4 py-2 font-black tracking-widest uppercase">
                         Enterprise Priority
                     </Badge>
                 </div>
