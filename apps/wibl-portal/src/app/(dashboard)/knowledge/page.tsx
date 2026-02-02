@@ -103,9 +103,9 @@ export default function KnowledgePage() {
             {/* Header / Intro */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8">
                 <div className="space-y-1">
-                    <p className="text-[10px] font-black text-wibl-mint uppercase tracking-[0.3em] mb-1">Intelligence Repository</p>
+                    <p className="text-[10px] font-black text-wibl-teal uppercase tracking-[0.3em] mb-1">Intelligence Repository</p>
                     <h1 className="text-3xl lg:text-4xl font-display font-black text-navy-900 tracking-tighter">
-                        Your <span className="text-gradient-mint">Library.</span>
+                        Your <span className="text-gradient">Library.</span>
                     </h1>
                 </div>
                 <Button

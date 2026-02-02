@@ -198,10 +198,10 @@ export function Sidebar({
                         )}
                     >
                         <HelpCircle size={20} className="shrink-0 text-navy-400 group-hover:text-navy-700" />
-                        {!isCollapsed && <span className="text-sm">Support & Help</span>}
+                        {!isCollapsed && <span className="text-sm">Support</span>}
                         {isCollapsed && (
                             <div className="absolute left-full ml-2 px-3 py-1.5 bg-navy-700 text-white text-xs font-bold rounded-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
-                                Support & Help
+                                Support
                             </div>
                         )}
                     </Link>
