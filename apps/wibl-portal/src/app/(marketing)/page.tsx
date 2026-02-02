@@ -191,8 +191,8 @@ function Hero() {
                         <div className="glass-premium rounded-[2.5rem] shadow-2xl p-6 animate-float">
                             {/* Header with live status */}
                             <div className="flex items-center gap-3 mb-6 pb-6 border-b border-navy-100/50">
-                                <div className="w-12 h-12 rounded-xl gradient-brand flex items-center justify-center text-white shrink-0 shadow-lg">
-                                    <Zap size={22} />
+                                <div className="w-12 h-12 rounded-xl gradient-brand flex items-center justify-center shrink-0 shadow-lg">
+                                    <span className="text-xl font-display font-black"><span className="text-navy-800">W</span><span className="text-white">.</span></span>
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
@@ -356,12 +356,12 @@ function Features() {
                         </p>
                     </div>
                     <div className="grid grid-cols-2 gap-6">
-                        <div className="glass-premium rounded-3xl p-8 flex flex-col items-center justify-center aspect-square text-center group card-hover-lift cursor-default">
-                            <span className="text-4xl font-display font-black text-navy-800 group-hover:text-gradient transition-all">500+</span>
+                        <div className="glass-premium rounded-3xl p-8 flex flex-col items-center justify-center aspect-square text-center group cursor-default border border-transparent hover:border-wibl-teal/30 hover:scale-[1.02] transition-all duration-300">
+                            <span className="text-4xl font-display font-black text-navy-800 group-hover:text-wibl-teal transition-colors duration-300">500+</span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-navy-400 mt-2">Companies</span>
                         </div>
-                        <div className="glass-premium rounded-3xl p-8 flex flex-col items-center justify-center aspect-square text-center mt-8 group card-hover-lift cursor-default border-wibl-teal/20">
-                            <span className="text-4xl font-display font-black text-wibl-teal">10M+</span>
+                        <div className="glass-premium rounded-3xl p-8 flex flex-col items-center justify-center aspect-square text-center mt-8 group cursor-default border border-wibl-teal/20 hover:border-wibl-teal/50 hover:scale-[1.02] transition-all duration-300">
+                            <span className="text-4xl font-display font-black text-wibl-teal group-hover:text-wibl-mint transition-colors duration-300">10M+</span>
                             <span className="text-[10px] font-black uppercase tracking-widest text-navy-400 mt-2">Conversations</span>
                         </div>
                     </div>
@@ -688,9 +688,9 @@ function Footer() {
                             <Logo size="md" variant="full" />
                         </Link>
                         <p className="text-navy-500 font-medium leading-relaxed text-sm">
-                            The world's first conversational agent builder. <br />
-                            Building the future of artificial intelligence, <br />
-                            simply connected.
+                            The world's first conversational agent builder.<br />
+                            Building the future of artificial intelligence,<br />
+                            <span className="text-wibl-teal font-bold">simply connected.</span>
                         </p>
                         <div className="flex gap-4">
                             <button className="w-10 h-10 rounded-xl bg-navy-50 text-navy-600 flex items-center justify-center hover:bg-navy-800 hover:text-white transition-all"><Twitter size={18} /></button>
