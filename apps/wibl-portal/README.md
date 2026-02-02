@@ -4,12 +4,11 @@ Simply connected AI Agents. Design, deploy, and monitor enterprise-grade intelli
 
 ## Features
 
-- **Conversational Builder**: Create complex AI agents by just talking to Wibl.
-- **Precision Knowledge Base**: RAG-powered data grounding for accurate responses.
-- **Dynamic Tool Integrations**: Connect your agents to Hubspot, Salesforce, and custom APIs.
-- **Multi-Channel Deployment**: Launch on Web, WhatsApp, Slack, Telegram, and Discord with one click.
-- **Deep-Dive Analytics**: Monitor sentiment, resolution rates, and user satisfaction.
-- **Enterprise Security**: Built-in prompt injection protection and PII redaction.
+- **Premium Agent Wizard**: Re-architected conversational engine for high-fidelity agent creation and deployment.
+- **Precision Knowledge Base**: RAG-powered data grounding supporting PDF, XLS, and URL crawling.
+- **Dynamic Tool Integrations**: Connect to Google Calendar, CRM systems, and Secure Payments.
+- **Enterprise Safety**: Integrated PII redaction, strict sandboxing, and natural human-like response timing.
+- **Multi-Channel Deployment**: One-click launch on WhatsApp Business, Slack Enterprise, Telegram, and Web Widgets.
 
 ## Project Structure
 
