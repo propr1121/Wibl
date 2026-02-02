@@ -1,0 +1,80 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e6]: Wibl.
+        - button "Collapse sidebar" [ref=e7]:
+          - img [ref=e8]
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - generic [ref=e16]: Active Ops
+          - generic [ref=e17]: v2.4.1
+        - generic [ref=e18]:
+          - generic [ref=e19]: 10:29 PM
+          - generic [ref=e20]: Mon, Feb 2
+      - navigation [ref=e21]:
+        - link "Overview" [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e23]
+          - generic [ref=e28]: Overview
+        - link "Workforce" [ref=e29] [cursor=pointer]:
+          - /url: /agents
+          - img [ref=e31]
+          - generic [ref=e33]: Workforce
+        - link "Library" [ref=e34] [cursor=pointer]:
+          - /url: /knowledge
+          - img [ref=e35]
+          - generic [ref=e37]: Library
+        - link "Settings" [ref=e38] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e39]
+          - generic [ref=e42]: Settings
+      - link "Support" [ref=e44] [cursor=pointer]:
+        - /url: /support
+        - img [ref=e45]
+        - generic [ref=e48]: Support
+      - button "JD John Doe PRO john@example.com" [ref=e51]:
+        - generic [ref=e54]: JD
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - paragraph [ref=e57]: John Doe
+            - generic [ref=e60]: PRO
+          - paragraph [ref=e61]: john@example.com
+    - generic [ref=e62]:
+      - banner [ref=e63]:
+        - generic [ref=e65]:
+          - heading "Dashboard" [level=1] [ref=e68]
+          - button "Notifications" [ref=e71]:
+            - img [ref=e72]
+            - generic [ref=e75]: "2"
+      - main [ref=e76]:
+        - generic [ref=e77]:
+          - generic [ref=e78]:
+            - generic [ref=e86] [cursor=pointer]: W.
+            - generic [ref=e87]:
+              - heading "Wibl." [level=2] [ref=e88]
+              - paragraph [ref=e89]: Create your agent
+              - paragraph [ref=e102]: Step 1 of 11
+          - generic [ref=e103]:
+            - generic [ref=e106]:
+              - generic [ref=e108]: W.
+              - generic [ref=e109]: Let's bring your AI agent to life. What's the core mission? Describe the task they'll focus on.
+            - generic [ref=e112]:
+              - generic [ref=e113]:
+                - textbox "e.g., Handle customer refunds, schedule viewings via Google Calendar, or manage a waitlist..." [active] [ref=e115]
+                - generic [ref=e116]:
+                  - generic [ref=e117]: ENTER
+                  - button "Continue" [disabled] [ref=e118]:
+                    - img [ref=e119]
+              - paragraph [ref=e121]: Wibl. uses secure AI to help build your perfect agent experience.
+    - generic [ref=e122]:
+      - button "Open help" [ref=e123]:
+        - generic [ref=e124]: W.
+      - generic: Need help?
+  - button "Open Next.js Dev Tools" [ref=e130] [cursor=pointer]:
+    - img [ref=e131]
+  - alert [ref=e134]
+```

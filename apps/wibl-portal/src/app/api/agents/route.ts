@@ -63,6 +63,13 @@ export async function POST(req: NextRequest) {
         const manager = new ClawdbotManager();
         const deployment = await manager.provision(agent);
 
+        // 2b. Start the engine process!
+        if (deployment.status === 'success') {
+            await manager.startInstance(agent.id).catch(err => {
+                console.error(`Failed to start engine for agent ${agent.id}:`, err);
+            });
+        }
+
         // 3. Update agent with deployment info
         const { data: updatedAgent, error: updateError } = await supabase
             .from('agents')

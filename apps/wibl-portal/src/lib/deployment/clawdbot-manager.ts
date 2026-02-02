@@ -71,9 +71,7 @@ export class ClawdbotManager {
                 JSON.stringify(config, null, 2)
             );
 
-            // 3. In a real SaaS, we would trigger a Docker container or fly.io machine here.
-            // For this local platform demo, we'll return the URL where this agent *would* be.
-            // We use a deterministic port strategy for the local multi-agent simulation.
+            // 3. Status is success once config is written
             const port = 19000 + (Math.abs(this.hashCode(agent.id)) % 1000);
             const gatewayUrl = `http://localhost:${port}`;
 
@@ -89,6 +87,98 @@ export class ClawdbotManager {
                 gatewayUrl: '',
                 status: 'failed',
                 error: error instanceof Error ? error.message : 'Unknown error'
+            };
+        }
+    }
+
+    async startInstance(agentId: string): Promise<boolean> {
+        const agentDir = join(this.DEPLOYMENTS_ROOT, agentId);
+        const configPath = join(agentDir, 'clawdbot.json');
+        const pidPath = join(agentDir, 'gateway.pid');
+
+        if (!existsSync(configPath)) {
+            throw new Error(`Config not found for agent ${agentId}`);
+        }
+
+        // Check if already running
+        if (await this.isInstanceRunning(agentId)) {
+            return true;
+        }
+
+        const { spawn } = await import('node:child_process');
+
+        // Use the absolute path to the clawdbot script
+        const scriptPath = join(process.cwd(), 'scripts', 'run-node.mjs');
+
+        const child = spawn(process.execPath, [scriptPath, 'gateway'], {
+            cwd: process.cwd(),
+            env: {
+                ...process.env,
+                CLAWDBOT_CONFIG_PATH: configPath,
+                CLAWDBOT_HIDE_BANNER: '1'
+            },
+            detached: true,
+            stdio: 'ignore'
+        });
+
+        if (child.pid) {
+            await fs.writeFile(pidPath, child.pid.toString());
+            child.unref();
+            return true;
+        }
+
+        return false;
+    }
+
+    async stopInstance(agentId: string): Promise<boolean> {
+        const agentDir = join(this.DEPLOYMENTS_ROOT, agentId);
+        const pidPath = join(agentDir, 'gateway.pid');
+
+        if (!existsSync(pidPath)) return true;
+
+        const pid = parseInt(await fs.readFile(pidPath, 'utf-8'));
+        try {
+            process.kill(pid, 'SIGINT');
+            await fs.unlink(pidPath);
+            return true;
+        } catch (error) {
+            // If already dead, just clean up
+            await fs.unlink(pidPath).catch(() => { });
+            return true;
+        }
+    }
+
+    async isInstanceRunning(agentId: string): Promise<boolean> {
+        const agentDir = join(this.DEPLOYMENTS_ROOT, agentId);
+        const pidPath = join(agentDir, 'gateway.pid');
+
+        if (!existsSync(pidPath)) return false;
+
+        try {
+            const pid = parseInt(await fs.readFile(pidPath, 'utf-8'));
+            process.kill(pid, 0); // Check if process exists
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Automated Recovery: Checks if the instance is supposed to be running but isn't.
+     * Restarts if necessary and logs the event.
+     */
+    async checkAndRecover(agentId: string): Promise<{ recovered: boolean, error?: string }> {
+        const isRunning = await this.isInstanceRunning(agentId);
+        if (isRunning) return { recovered: false };
+
+        console.log(`[Daemon] Instance ${agentId} is down. Attempting recovery...`);
+        try {
+            const success = await this.startInstance(agentId);
+            return { recovered: success };
+        } catch (error) {
+            return {
+                recovered: false,
+                error: error instanceof Error ? error.message : 'Recovery failed'
             };
         }
     }

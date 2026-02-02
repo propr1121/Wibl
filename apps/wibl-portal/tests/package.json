@@ -1,0 +1,12 @@
+{
+    "name": "wibl-e2e-tests",
+    "scripts": {
+        "test:e2e": "playwright test --project=chromium",
+        "test:e2e:headed": "playwright test --project=chromium --headed",
+        "test:e2e:debug": "playwright test --project=chromium --headed --debug",
+        "test:e2e:report": "playwright show-report"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.40.0"
+    }
+}

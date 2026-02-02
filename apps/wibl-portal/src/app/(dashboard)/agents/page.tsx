@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '@/components/ui';
 import {
     Bot,
@@ -58,9 +58,30 @@ const MOCK_AGENTS = [
 ];
 
 export default function AgentsPage() {
+    const [agents, setAgents] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     useHeaderConfig({
         breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Workforce', href: '/agents' }],
     });
+
+    useEffect(() => {
+        const fetchAgents = async () => {
+            try {
+                const response = await fetch('/api/agents');
+                if (response.ok) {
+                    const data = await response.json();
+                    setAgents(data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch agents:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAgents();
+    }, []);
 
     return (
         <div className="space-y-12 pb-20 max-w-[1400px] mx-auto relative overflow-hidden">
@@ -122,18 +143,40 @@ export default function AgentsPage() {
             {/* Active Inventory */}
             <div className="space-y-6 animate-reveal delay-200">
                 <div className="flex items-center justify-between ml-1">
-                    <p className="text-[11px] font-black text-navy-400 uppercase tracking-[0.4em]">Active Members ({MOCK_AGENTS.length})</p>
+                    <p className="text-[11px] font-black text-navy-400 uppercase tracking-[0.4em]">Active Members ({agents.length})</p>
                 </div>
                 <div className="space-y-4">
-                    {MOCK_AGENTS.map((agent, idx) => (
-                        <div
-                            key={agent.id}
-                            className="animate-slide-up"
-                            style={{ animationDelay: `${idx * 100}ms` }}
-                        >
-                            <AgentListItem agent={agent} />
+                    {isLoading ? (
+                        <div className="py-20 flex flex-col items-center justify-center space-y-4">
+                            <div className="w-12 h-12 border-4 border-wibl-teal border-t-transparent rounded-full animate-spin" />
+                            <p className="text-navy-400 font-display font-black uppercase tracking-widest text-[10px]">Syncing Workforce...</p>
                         </div>
-                    ))}
+                    ) : agents.length === 0 ? (
+                        <Card variant="glass" className="py-20 text-center flex flex-col items-center border-dashed border-2 border-navy-100 bg-navy-50/20">
+                            <div className="w-20 h-20 rounded-full bg-navy-100 flex items-center justify-center text-navy-300 mb-6">
+                                <Bot size={40} />
+                            </div>
+                            <h3 className="text-2xl font-display font-black text-navy-900 mb-2">No agents deployed yet</h3>
+                            <p className="text-navy-500 font-medium mb-8 max-w-sm mx-auto">
+                                Bring your first AI assistant to life using our premium creation wizard.
+                            </p>
+                            <Link href="/agents/new">
+                                <Button variant="primary" size="lg" leftIcon={<Plus size={20} />} className="shadow-premium">
+                                    Create New Agent
+                                </Button>
+                            </Link>
+                        </Card>
+                    ) : (
+                        agents.map((agent, idx) => (
+                            <div
+                                key={agent.id}
+                                className="animate-slide-up"
+                                style={{ animationDelay: `${idx * 100}ms` }}
+                            >
+                                <AgentListItem agent={agent} />
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
@@ -161,8 +204,8 @@ function AgentListItem({ agent }: { agent: any }) {
                             <h3 className="text-xl font-display font-black text-navy-900 tracking-tight truncate">
                                 {agent.name}
                             </h3>
-                            <Badge variant={agent.status === 'active' ? 'teal' : 'error'} size="sm" className="font-black uppercase tracking-widest text-[8px] h-4 leading-none">
-                                {agent.status === 'active' ? 'Operational' : 'Idle'}
+                            <Badge variant={agent.deployment?.status === 'active' ? 'teal' : 'error'} size="sm" className="font-black uppercase tracking-widest text-[8px] h-4 leading-none">
+                                {agent.deployment?.status === 'active' ? 'Operational' : 'Idle'}
                             </Badge>
                         </div>
                         <div className="flex items-center gap-3">
@@ -187,25 +230,25 @@ function AgentListItem({ agent }: { agent: any }) {
                     <div className="flex flex-col items-center gap-1.5 group/step">
                         <div className={cn(
                             "w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-300",
-                            agent.trained ? "bg-wibl-mint/5 text-wibl-mint border-wibl-mint/10" : "bg-navy-50/50 text-navy-200 border-navy-50"
+                            agent.knowledge_source_ids?.length > 0 ? "bg-wibl-mint/5 text-wibl-mint border-wibl-mint/10" : "bg-navy-50/50 text-navy-200 border-navy-50"
                         )}>
                             <Cpu size={16} />
                         </div>
                         <span className={cn(
                             "text-[9px] font-black uppercase tracking-widest",
-                            agent.trained ? "text-wibl-mint/80" : "text-navy-300"
+                            agent.knowledge_source_ids?.length > 0 ? "text-wibl-mint/80" : "text-navy-300"
                         )}>Knowledge</span>
                     </div>
                     <div className="flex flex-col items-center gap-1.5 group/step">
                         <div className={cn(
                             "w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-300",
-                            agent.deployed ? "bg-wibl-sky/5 text-wibl-sky border-wibl-sky/10" : "bg-navy-50/50 text-navy-200 border-navy-50"
+                            agent.deployment?.status === 'active' ? "bg-wibl-sky/5 text-wibl-sky border-wibl-sky/10" : "bg-navy-50/50 text-navy-200 border-navy-50"
                         )}>
                             <Rocket size={16} />
                         </div>
                         <span className={cn(
                             "text-[9px] font-black uppercase tracking-widest",
-                            agent.deployed ? "text-wibl-sky/80" : "text-navy-300"
+                            agent.deployment?.status === 'active' ? "text-wibl-sky/80" : "text-navy-300"
                         )}>Live</span>
                     </div>
                 </div>
@@ -213,7 +256,7 @@ function AgentListItem({ agent }: { agent: any }) {
                 {/* Right: Telemetry & Navigation */}
                 <div className="p-6 sm:p-7 flex items-center justify-between lg:justify-end gap-10">
                     <div className="text-right hidden xl:block min-w-[100px]">
-                        <p className="text-2xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">{agent.conversations}</p>
+                        <p className="text-2xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">{agent.stats?.totalConversations || 0}</p>
                         <p className="text-[9px] font-black text-navy-400 uppercase tracking-widest mt-1">Total Chats</p>
                     </div>
 

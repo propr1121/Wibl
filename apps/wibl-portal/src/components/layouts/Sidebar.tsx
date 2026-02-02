@@ -40,6 +40,7 @@ const NAV_ITEMS: NavItem[] = [
     { name: 'Overview', href: '/dashboard', icon: LayoutGrid },
     { name: 'Workforce', href: '/agents', icon: Activity },
     { name: 'Library', href: '/knowledge', icon: BookOpen },
+    { name: 'Skills', href: '/skills', icon: Plug },
     { name: 'Settings', href: '/settings', icon: Settings },
 ];
 

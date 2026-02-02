@@ -21,11 +21,12 @@ import { cn } from '@/lib/utils';
 type UploaderTab = 'upload' | 'url' | 'text' | 'qa';
 
 interface KnowledgeUploaderProps {
+    agentId?: string | null;
     onSuccess: (item: any) => void;
     onCancel: () => void;
 }
 
-export default function KnowledgeUploader({ onSuccess, onCancel }: KnowledgeUploaderProps) {
+export default function KnowledgeUploader({ agentId, onSuccess, onCancel }: KnowledgeUploaderProps) {
     const [activeTab, setActiveTab] = useState<UploaderTab>('upload');
     const [isDragging, setIsDragging] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
@@ -55,13 +56,81 @@ export default function KnowledgeUploader({ onSuccess, onCancel }: KnowledgeUplo
         }
     }, []);
 
-    const handleFileUpload = (files: File[]) => {
+    const handleFileUpload = async (files: File[]) => {
         setIsProcessing(true);
-        // Mock processing delay
-        setTimeout(() => {
+        try {
+            // In a real app, we'd upload to S3/Supabase Storage first
+            // For now, we'll simulate metadata persistence
+            const response = await fetch('/api/knowledge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'document',
+                    title: files[0].name,
+                    agent_id: agentId,
+                    file_path: `/uploads/${files[0].name}`
+                }),
+            });
+
+            if (response.ok) {
+                const item = await response.json();
+                onSuccess(item);
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+        } finally {
             setIsProcessing(false);
-            onSuccess({ type: 'document', title: files[0].name });
-        }, 1500);
+        }
+    };
+
+    const handleUrlSubmit = async () => {
+        setIsProcessing(true);
+        try {
+            const response = await fetch('/api/knowledge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'url',
+                    title: new URL(url).hostname,
+                    source_url: url,
+                    agent_id: agentId
+                }),
+            });
+
+            if (response.ok) {
+                const item = await response.json();
+                onSuccess(item);
+            }
+        } catch (error) {
+            console.error('Crawl failed:', error);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleTextSubmit = async () => {
+        setIsProcessing(true);
+        try {
+            const response = await fetch('/api/knowledge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'text',
+                    title: textTitle,
+                    content: textContent,
+                    agent_id: agentId
+                }),
+            });
+
+            if (response.ok) {
+                const item = await response.json();
+                onSuccess(item);
+            }
+        } catch (error) {
+            console.error('Save failed:', error);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const handleAddQaPair = () => {
@@ -168,7 +237,7 @@ export default function KnowledgeUploader({ onSuccess, onCancel }: KnowledgeUplo
                                 <Button
                                     variant="primary"
                                     disabled={!url || isProcessing}
-                                    onClick={() => handleFileUpload([])}
+                                    onClick={handleUrlSubmit}
                                 >
                                     Fetch
                                 </Button>
@@ -211,8 +280,8 @@ export default function KnowledgeUploader({ onSuccess, onCancel }: KnowledgeUplo
                             <Button variant="ghost" onClick={onCancel}>Cancel</Button>
                             <Button
                                 variant="primary"
-                                disabled={!textTitle || !textContent}
-                                onClick={() => onSuccess({ type: 'text', title: textTitle })}
+                                disabled={!textTitle || !textContent || isProcessing}
+                                onClick={handleTextSubmit}
                             >
                                 Save Content
                             </Button>

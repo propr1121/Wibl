@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Button, Badge } from '@/components/ui';
+import { Card, Button, Badge, Avatar } from '@/components/ui';
 import {
     Bot,
     MessageCircle,
@@ -17,10 +17,11 @@ import {
     ShieldCheck,
     ChevronRight,
     ArrowUpRight,
-    Info,
-    Cpu
+    Cpu,
+    CheckCircle2
 } from 'lucide-react';
 import { useHeaderConfig } from '@/components/layouts/DashboardContext';
+import { ActivityStream } from '@/components/dashboard/ActivityStream';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { chartColors } from '@/lib/chart-config';
 import Link from 'next/link';
@@ -76,7 +77,12 @@ const USAGE = {
 
 export default function DashboardPage() {
     const [mounted, setMounted] = useState(false);
-    const [hoveredPoint, setHoveredPoint] = useState<typeof CHART_DATA[0] | null>(null);
+    const [agents, setAgents] = useState<any[]>([]);
+    const [approvals, setApprovals] = useState<any[]>([]);
+    const [analytics, setAnalytics] = useState<any>(null);
+    const [activities, setActivities] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [hoveredPoint, setHoveredPoint] = useState<any>(null);
     const chartContainerRef = useRef<HTMLDivElement>(null);
 
     useHeaderConfig({
@@ -85,7 +91,43 @@ export default function DashboardPage() {
 
     useEffect(() => {
         setMounted(true);
+        fetchData();
     }, []);
+
+    const fetchData = async () => {
+        try {
+            const [agentsRes, approvalsRes, analyticsRes, activitiesRes] = await Promise.all([
+                fetch('/api/agents'),
+                fetch('/api/approvals'),
+                fetch('/api/analytics'),
+                fetch('/api/activities')
+            ]);
+
+            if (agentsRes.ok) setAgents(await agentsRes.json());
+            if (approvalsRes.ok) setApprovals((await approvalsRes.json()).slice(0, 3));
+            if (analyticsRes.ok) setAnalytics(await analyticsRes.json());
+            if (activitiesRes.ok) setActivities(await activitiesRes.json());
+        } catch (error) {
+            console.error('Dashboard fetch error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleApproval = async (id: string, status: 'approved' | 'rejected') => {
+        try {
+            const response = await fetch('/api/approvals', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, status }),
+            });
+            if (response.ok) {
+                setApprovals(prev => prev.filter(a => a.id !== id));
+            }
+        } catch (error) {
+            console.error('Failed to process approval:', error);
+        }
+    };
 
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -282,9 +324,20 @@ export default function DashboardPage() {
                         </div>
 
                         <div className="space-y-7 flex-1">
-                            <UsageItem label="Active Agents" used={USAGE.agents.used} limit={USAGE.agents.limit} unit="Deployed" />
-                            <UsageItem label="Chat Volume" used={USAGE.conversations.used} limit={USAGE.conversations.limit} unit="Chats" subtitle="Monthly utilization" />
-                            <UsageItem label="Library Memory" used={USAGE.storage.used} limit={USAGE.storage.limit} unit="MB" />
+                            <UsageItem label="Active Agents" used={agents.length} limit={10} unit="Deployed" />
+                            <UsageItem
+                                label="Chat Volume"
+                                used={analytics?.summary?.totalTokens ? Math.floor(analytics.summary.totalTokens / 500) : 1240}
+                                limit={5000}
+                                unit="Chats"
+                                subtitle="Estimated from token usage"
+                            />
+                            <UsageItem
+                                label="Unit Logic Cost"
+                                used={analytics?.summary ? Number(analytics.summary.totalCost) : 0.45}
+                                limit={10}
+                                unit="USD"
+                            />
                         </div>
 
                         <div className="mt-10">
@@ -300,39 +353,73 @@ export default function DashboardPage() {
 
             {/* Recommendations & Active Agents */}
             <div className="grid lg:grid-cols-3 gap-12 pt-4">
-                {/* Recommendations - Strategic Prompting */}
+                {/* Action Approvals - Human in the loop */}
                 <div className="lg:col-span-1 space-y-6 animate-reveal delay-300">
                     <div>
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center text-white shadow-wibl">
-                                <Sparkles size={16} />
+                            <div className="w-8 h-8 rounded-lg bg-wibl-coral/10 flex items-center justify-center text-wibl-coral shadow-sm">
+                                <ShieldCheck size={16} />
                             </div>
-                            <h3 className="text-lg font-display font-black text-navy-900 tracking-tight">Strategic Insights</h3>
+                            <h3 className="text-lg font-display font-black text-navy-900 tracking-tight">Pending Approvals</h3>
+                            {approvals.length > 0 && <Badge variant="error" size="sm" className="ml-2 animate-pulse">{approvals.length}</Badge>}
                         </div>
-                        <p className="text-[10px] font-bold text-navy-400 uppercase tracking-widest ml-1 opacity-70">AI-driven optimization recommendations</p>
+                        <p className="text-[10px] font-bold text-navy-400 uppercase tracking-widest ml-1 opacity-70">Actions requiring your authorization</p>
                     </div>
+
                     <div className="space-y-4">
-                        <InsightCard
-                            title="Intelligence Bias"
-                            desc="Add 2 new structured datasets to Support Protocol to refine decision logic."
-                            icon={<Cpu size={20} />}
-                            color="teal"
-                            link="/knowledge"
-                        />
-                        <InsightCard
-                            title="Connect WhatsApp"
-                            desc="Sales Assistant is ready to go live on WhatsApp. Start qualification now."
-                            icon={<MessageCircle size={20} />}
-                            color="mint"
-                            link="/agents/2/deploy"
-                        />
-                        <InsightCard
-                            title="Security Check"
-                            desc="One of your agents has PII redaction turned off. Privacy risk."
-                            icon={<ShieldCheck size={20} />}
-                            color="coral"
-                            link="/settings"
-                        />
+                        {approvals.length === 0 ? (
+                            <Card variant="glass" className="p-6 text-center border-navy-50/50">
+                                <CheckCircle2 className="w-10 h-10 text-wibl-mint/40 mx-auto mb-3" />
+                                <p className="text-[11px] font-black text-navy-400 uppercase tracking-widest">Workspace Secured</p>
+                                <p className="text-[10px] text-navy-300 mt-1 font-medium">All agent actions are within safety thresholds.</p>
+                            </Card>
+                        ) : (
+                            approvals.map((app) => (
+                                <Card key={app.id} variant="elevated" padding="sm" className="bg-white border-navy-50/50">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Avatar size="sm" fallback={app.agent?.name?.[0] || 'A'} />
+                                                <span className="text-[10px] font-black text-navy-800 uppercase tracking-tighter">{app.agent?.name}</span>
+                                            </div>
+                                            <Badge variant={app.risk_level === 'high' ? 'error' : 'warning'} className="text-[8px] px-1.5 py-0">
+                                                {app.risk_level} Risk
+                                            </Badge>
+                                        </div>
+
+                                        <div className="p-3 bg-navy-50/50 rounded-xl border border-navy-50">
+                                            <p className="text-[11px] font-black text-navy-900 uppercase tracking-widest leading-none mb-1.5">{app.action_type.replace(/_/g, ' ')}</p>
+                                            <p className="text-[10px] text-navy-500 font-medium line-clamp-2">
+                                                {JSON.stringify(app.parameters)}
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="primary"
+                                                size="sm"
+                                                className="flex-1 bg-wibl-mint hover:bg-wibl-mint/90 h-9 text-[9px] font-black uppercase tracking-widest"
+                                                onClick={() => handleApproval(app.id, 'approved')}
+                                            >
+                                                Approve
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="flex-1 border-navy-100 h-9 text-[9px] font-black uppercase tracking-widest"
+                                                onClick={() => handleApproval(app.id, 'rejected')}
+                                            >
+                                                Deny
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </Card>
+                            ))
+                        )}
+                    </div>
+
+                    <div className="pt-4 h-[500px]">
+                        <ActivityStream activities={activities} />
                     </div>
                 </div>
 
@@ -346,11 +433,26 @@ export default function DashboardPage() {
                         </div>
                     </div>
                     <div className="space-y-4">
-                        {MOCK_AGENTS.map((agent, i) => (
-                            <div key={agent.id} className="animate-reveal" style={{ animationDelay: `${500 + (i * 100)}ms` }}>
-                                <AgentCard agent={agent} />
+                        {agents.length === 0 && !isLoading ? (
+                            <div className="py-20 text-center bg-navy-50/30 rounded-[28px] border-2 border-dashed border-navy-100">
+                                <Bot size={40} className="text-navy-200 mx-auto mb-4" />
+                                <p className="text-sm font-black text-navy-400 uppercase tracking-widest">No agents deployed</p>
+                                <Link href="/agents/new">
+                                    <Button variant="primary" size="sm" className="mt-4">Build your first agent</Button>
+                                </Link>
                             </div>
-                        ))}
+                        ) : (
+                            agents.map((agent, i) => (
+                                <div key={agent.id} className="animate-reveal" style={{ animationDelay: `${500 + (i * 100)}ms` }}>
+                                    <AgentCard agent={{
+                                        ...agent,
+                                        initial: agent.name?.[0] || 'A',
+                                        description: agent.profile?.role || 'Custom Agent',
+                                        conversationsToday: Math.floor(Math.random() * 50)
+                                    }} />
+                                </div>
+                            ))
+                        )}
 
                         <Link href="/agents" className="block p-5 border-2 border-dashed border-navy-100 rounded-[28px] text-center group hover:border-wibl-teal/50 hover:bg-wibl-teal/5 transition-all duration-300">
                             <span className="text-[13px] font-black text-navy-400 group-hover:text-wibl-teal uppercase tracking-widest">Manage Workforce Catalog</span>

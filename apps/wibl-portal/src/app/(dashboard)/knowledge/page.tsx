@@ -59,7 +59,9 @@ const MOCK_AGENTS = [
 // --- Main Page ---
 
 export default function KnowledgePage() {
-    const [items, setItems] = useState<KnowledgeItem[]>(MOCK_KNOWLEDGE);
+    const [items, setItems] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [agents, setAgents] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const [typeFilter, setTypeFilter] = useState<KnowledgeType>('all');
     const [statusFilter, setStatusFilter] = useState<StatusType>('all');
@@ -72,26 +74,47 @@ export default function KnowledgePage() {
         breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Library', href: '/knowledge' }],
     });
 
+    const fetchData = async () => {
+        try {
+            const [itemsRes, agentsRes] = await Promise.all([
+                fetch('/api/knowledge'),
+                fetch('/api/agents')
+            ]);
+
+            if (itemsRes.ok) setItems(await itemsRes.json());
+            if (agentsRes.ok) setAgents(await agentsRes.json());
+        } catch (error) {
+            console.error('Failed to fetch library data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+
+        // Polling for processing status
+        const interval = setInterval(async () => {
+            const hasProcessing = items.some(item => item.processing_status === 'processing');
+            if (hasProcessing) {
+                const res = await fetch('/api/knowledge');
+                if (res.ok) setItems(await res.json());
+            }
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [items.length]); // Re-evaluate if we should poll when items change
+
     const filteredItems = items.filter(item => {
         const matchesSearch = item.title.toLowerCase().includes(search.toLowerCase());
         const matchesType = typeFilter === 'all' || item.type === typeFilter;
-        const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+        const matchesStatus = statusFilter === 'all' || item.processing_status === statusFilter;
         return matchesSearch && matchesType && matchesStatus;
     });
 
     const handleUploadSuccess = (newItem: any) => {
         setIsUploadModalOpen(false);
-        const item: KnowledgeItem = {
-            id: Math.random().toString(),
-            type: newItem.type,
-            title: newItem.title,
-            status: 'processing',
-            tokens: 0,
-            chunks: 0,
-            agent: null,
-            createdAt: 'Just now'
-        };
-        setItems([item, ...items]);
+        setItems([newItem, ...items]);
     };
 
     return (
@@ -166,11 +189,165 @@ export default function KnowledgePage() {
                 </div>
             </Card>
 
-            {/* Grid View */}
-            {filteredItems.length === 0 ? (
+            {/* Summary Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <Card variant="elevated" padding="lg" className="bg-white/80 backdrop-blur-sm border-navy-50 shadow-lg">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-wibl-teal/10 flex items-center justify-center text-wibl-teal">
+                            <Database size={24} />
+                        </div>
+                        <h3 className="text-sm font-black text-navy-400 uppercase tracking-widest">Total Assets</h3>
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <p className="text-5xl font-display font-black text-navy-900 tabular-nums tracking-tighter">
+                            {items.length}
+                        </p>
+                        <p className="text-sm font-bold text-navy-300">
+                            {items.filter(i => i.processing_status === 'ready').length} ready
+                        </p>
+                    </div>
+                </Card>
+                <Card variant="elevated" padding="lg" className="bg-white/80 backdrop-blur-sm border-navy-50 shadow-lg">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-wibl-mint/10 flex items-center justify-center text-wibl-mint">
+                            <Cpu size={24} />
+                        </div>
+                        <h3 className="text-sm font-black text-navy-400 uppercase tracking-widest">Total Intelligence</h3>
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <p className="text-5xl font-display font-black text-navy-900 tabular-nums tracking-tighter">
+                            {items.reduce((acc, i) => acc + (i.total_tokens || 0), 0).toLocaleString()}
+                        </p>
+                        <p className="text-sm font-bold text-navy-300">
+                            tokens
+                        </p>
+                    </div>
+                </Card>
+                <Card variant="elevated" padding="lg" className="bg-white/80 backdrop-blur-sm border-navy-50 shadow-lg">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-xl bg-wibl-coral/10 flex items-center justify-center text-wibl-coral">
+                            <Zap size={24} />
+                        </div>
+                        <h3 className="text-sm font-black text-navy-400 uppercase tracking-widest">Deployed Agents</h3>
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <p className="text-5xl font-display font-black text-navy-900 tabular-nums tracking-tighter">
+                            {new Set(items.filter(i => i.agent_id).map(i => i.agent_id)).size}
+                        </p>
+                        <p className="text-sm font-bold text-navy-300">
+                            of {agents.length} available
+                        </p>
+                    </div>
+                </Card>
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden lg:block bg-white rounded-[2.5rem] border border-navy-50 overflow-hidden shadow-sm">
+                <table className="w-full text-left">
+                    <thead>
+                        <tr className="border-b border-navy-50">
+                            <th className="px-8 py-6 text-[10px] font-black text-navy-400 uppercase tracking-widest">Knowledge Asset</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-navy-400 uppercase tracking-widest">Type</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-navy-400 uppercase tracking-widest">Status</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-navy-400 uppercase tracking-widest">Intelligence</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-navy-400 uppercase tracking-widest">Deployment</th>
+                            <th className="px-8 py-6 text-[10px] font-black text-navy-400 uppercase tracking-widest">Age</th>
+                            <th className="px-8 py-6"></th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-navy-50/50">
+                        {filteredItems.map((item) => (
+                            <tr key={item.id} className="group hover:bg-navy-50/30 transition-colors">
+                                <td className="px-8 py-5">
+                                    <div className="flex items-center gap-4">
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
+                                            item.type === 'document' ? "bg-blue-50 text-blue-500" :
+                                                item.type === 'url' ? "bg-wibl-teal/10 text-wibl-teal" :
+                                                    item.type === 'text' ? "bg-amber-50 text-amber-500" :
+                                                        "bg-purple-50 text-purple-500"
+                                        )}>
+                                            {item.type === 'document' ? <FileText size={18} /> :
+                                                item.type === 'url' ? <LinkIcon size={18} /> :
+                                                    item.type === 'text' ? <Type size={18} /> :
+                                                        <HelpCircle size={18} />}
+                                        </div>
+                                        <span className="text-sm font-black text-navy-800 tracking-tight">{item.title}</span>
+                                    </div>
+                                </td>
+                                <td className="px-8 py-5 text-[10px] font-black text-navy-400 uppercase tracking-widest">{item.type}</td>
+                                <td className="px-8 py-5">
+                                    <div className="flex items-center gap-2">
+                                        {item.processing_status === 'ready' ? (
+                                            <div className="flex items-center gap-2 text-wibl-mint">
+                                                <CheckCircle2 size={16} />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Active</span>
+                                            </div>
+                                        ) : item.processing_status === 'processing' ? (
+                                            <div className="flex items-center gap-2 text-wibl-sky">
+                                                <Loader2 size={16} className="animate-spin" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Indexing...</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 text-coral">
+                                                <AlertCircle size={16} />
+                                                <span className="text-[10px] font-black uppercase tracking-widest">Failed</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </td>
+                                <td className="px-8 py-5">
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-black text-navy-800 tabular-nums">{item.total_tokens?.toLocaleString() || 0} tokens</span>
+                                        <span className="text-[9px] font-bold text-navy-300 uppercase tracking-widest mt-0.5">{item.chunk_count || 0} fragments</span>
+                                    </div>
+                                </td>
+                                <td className="px-8 py-5">
+                                    {item.agent_id ? (
+                                        <div className="flex items-center gap-2">
+                                            <Avatar fallback={agents.find(a => a.id === item.agent_id)?.name?.[0] || '?'} size="sm" />
+                                            <span className="text-[11px] font-black text-navy-500 uppercase tracking-tight">
+                                                {agents.find(a => a.id === item.agent_id)?.name}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <Badge variant="teal" className="text-[9px] font-black opacity-40 bg-navy-50 text-navy-400 border-transparent">Unassigned</Badge>
+                                    )}
+                                </td>
+                                <td className="px-8 py-5 text-[10px] font-black text-navy-400 uppercase tracking-widest">
+                                    {new Date(item.created_at).toLocaleDateString()}
+                                </td>
+                                <td className="px-8 py-5 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        <Button variant="ghost" size="sm" className="p-2.5 bg-navy-50 hover:bg-navy-100 transition-colors">
+                                            <MoreVertical size={16} className="text-navy-400" />
+                                        </Button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                {filteredItems.length === 0 && (
+                    <div className="py-32 flex flex-col items-center justify-center text-center">
+                        <div className="w-24 h-24 rounded-full bg-navy-50 flex items-center justify-center text-navy-200 mb-8">
+                            <BookOpen size={48} />
+                        </div>
+                        <h3 className="text-2xl font-display font-black text-navy-900 mb-2">Knowledge vault is empty</h3>
+                        <p className="text-navy-500 font-medium mb-10 max-w-sm">No assets match your current filters. Clear filters or add new knowledge.</p>
+                        <Button variant="primary" size="lg" leftIcon={<Plus size={20} />} onClick={() => setIsUploadModalOpen(true)}>
+                            Add Knowledge Asset
+                        </Button>
+                    </div>
+                )}
+            </div>
+
+            {/* Mobile View: Grid */}
+            {filteredItems.length === 0 && !isLoading && ( // Only show empty state if no items and not loading
                 <EmptyState onAction={() => setIsUploadModalOpen(true)} />
-            ) : (
-                <div className="grid grid-cols-1 gap-6 animate-fade-in">
+            )}
+            {filteredItems.length > 0 && ( // Only show grid if there are items
+                <div className="grid grid-cols-1 gap-6 animate-fade-in lg:hidden">
                     {filteredItems.map((item) => (
                         <KnowledgeItemRow
                             key={item.id}
@@ -183,10 +360,12 @@ export default function KnowledgePage() {
                                 setSelectedItem(item);
                                 setIsEditModalOpen(true);
                             }}
+                            agents={agents} // Pass agents to the row component
                         />
                     ))}
                 </div>
             )}
+
 
             {/* Modals */}
             <Modal
@@ -210,7 +389,7 @@ export default function KnowledgePage() {
                         Which agent should have access to <span className="text-navy-800 font-black">"{selectedItem?.title}"</span>?
                     </p>
                     <div className="space-y-3">
-                        {MOCK_AGENTS.map(agent => (
+                        {agents.map(agent => ( // Use real agents
                             <button
                                 key={agent.id}
                                 className="w-full flex items-center gap-4 p-4 bg-navy-50 hover:bg-white border-2 border-transparent hover:border-wibl-teal rounded-2xl transition-all group"
@@ -253,7 +432,7 @@ export default function KnowledgePage() {
 // --- Sub-components ---
 
 // Enhanced Knowledge Item Component
-function KnowledgeItemRow({ item, onEdit, onAssign }: { item: KnowledgeItem, onEdit: () => void, onAssign: () => void }) {
+function KnowledgeItemRow({ item, onEdit, onAssign, agents }: { item: any, onEdit: () => void, onAssign: () => void, agents: any[] }) {
     const Icon = item.type === 'document' ? FileText : item.type === 'url' ? LinkIcon : item.type === 'text' ? Type : HelpCircle;
 
     return (
@@ -276,11 +455,11 @@ function KnowledgeItemRow({ item, onEdit, onAssign }: { item: KnowledgeItem, onE
                             {item.title}
                         </h3>
                         <Badge
-                            variant={item.status === 'ready' ? 'teal' : item.status === 'failed' ? 'error' : 'warning'}
+                            variant={item.processing_status === 'ready' ? 'teal' : item.processing_status === 'failed' ? 'error' : 'warning'}
                             size="sm"
                             className="font-black uppercase tracking-widest text-[9px]"
                         >
-                            {item.status}
+                            {item.processing_status}
                         </Badge>
                     </div>
                     <div className="flex items-center gap-3">
@@ -296,13 +475,13 @@ function KnowledgeItemRow({ item, onEdit, onAssign }: { item: KnowledgeItem, onE
                 <div className="px-10 flex items-center gap-12 border-y md:border-y-0 md:border-x border-navy-50/50 h-12">
                     <div className="text-center min-w-[80px]">
                         <p className="text-xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">
-                            {(item.tokens / 1000).toFixed(1)}k
+                            {((item.total_tokens || 0) / 1000).toFixed(1)}k
                         </p>
                         <p className="text-[9px] font-black text-navy-400 uppercase tracking-widest mt-1">Tokens</p>
                     </div>
                     <div className="text-center min-w-[80px] hidden sm:block">
                         <p className="text-xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">
-                            {item.chunks}
+                            {item.chunk_count || 0}
                         </p>
                         <p className="text-[9px] font-black text-navy-400 uppercase tracking-widest mt-1">Fragments</p>
                     </div>
@@ -310,12 +489,14 @@ function KnowledgeItemRow({ item, onEdit, onAssign }: { item: KnowledgeItem, onE
 
                 {/* Actions */}
                 <div className="flex items-center justify-between md:justify-end gap-6 min-w-[200px]">
-                    {item.agent ? (
+                    {item.agent_id ? (
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center text-white text-xs font-black">
-                                {item.agent[0]}
+                                {agents.find(a => a.id === item.agent_id)?.name?.[0] || '?'}
                             </div>
-                            <span className="text-[11px] font-black text-navy-800 uppercase tracking-tighter">{item.agent}</span>
+                            <span className="text-[11px] font-black text-navy-800 uppercase tracking-tighter">
+                                {agents.find(a => a.id === item.agent_id)?.name || 'Loading...'}
+                            </span>
                         </div>
                     ) : (
                         <Button
