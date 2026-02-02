@@ -16,7 +16,15 @@ Simply connected AI Agents. Design, deploy, and monitor enterprise-grade intelli
 - `src/app/(dashboard)`: Collaborative agent management platform.
 - `src/components/ui`: Reusable brand-compliant component library.
 - `src/lib/security`: Protection layers (Rate limiting, Injection detection, Audit logging).
-- `src/lib/deployment`: Agent provisioning system (Wibl Manager).
+- `src/lib/deployment`: Agent provisioning system (Clawdbot Manager).
+
+## Engine Integration
+
+Wibl uses the **Clawdbot Engine** as its high-performance execution layer. The relationship between the Portal (UI) and the Engine (Logic) is managed via the `ClawdbotManager`:
+
+1.  **Configuration Generation**: When a user creates an agent in the Portal, the `ClawdbotManager` generates a standard `clawdbot.json` configuration file tailored to that agent's personality, tools, and security rules.
+2.  **Isolated Provisioning**: Each agent is deployed into a dedicated directory at `~/.clawdbot/deployments/[agentId]/`, ensuring complete data and process isolation.
+3.  **Gateway Orchestration**: The Portal tracks the `gatewayUrl` and `authToken` for each agent, allowing the Wibl Dashboard to connect directly to the engine for real-time monitoring and control.
 
 ## Getting Started
 

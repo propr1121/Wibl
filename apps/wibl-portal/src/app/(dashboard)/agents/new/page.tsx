@@ -367,16 +367,74 @@ export default function AgentWizardPage() {
         const nextStepIndex = findNextStepIndex(state.currentStepIndex, nextContext);
 
         if (nextStepIndex !== -1) {
-            dispatch({ type: 'NEXT_STEP' }); // Note: Reducer currently just adds 1, we should probably update it or use the index
-            // Actually, let's fix the reducer or handle the specific index
+            dispatch({ type: 'NEXT_STEP' });
             setTimeout(() => {
                 startStep(nextStepIndex);
                 setIsProcessing(false);
             }, 500);
         } else {
-            // Success!
-            setIsProcessing(false);
+            // Success! PERSIST TO BACKEND
+            await saveAgent(nextContext);
+        }
+    };
+
+    const saveAgent = async (ctx: WizardContext) => {
+        setIsProcessing(true);
+        try {
+            const payload = {
+                name: ctx.name,
+                description: ctx.purpose,
+                avatar_url: ctx.avatar.startsWith('http') ? ctx.avatar : null,
+                personality: {
+                    tone: ctx.personality,
+                    customTraits: ctx.personalityDetail ? [ctx.personalityDetail] : [],
+                    greetingMessage: `Hello! I'm ${ctx.name}. How can I help you today?`,
+                },
+                capabilities: {
+                    allowedActions: ctx.capabilities,
+                    restrictedTopics: ["General advice only", "No legal advice"],
+                },
+                knowledge_source_ids: [],
+                tool_connection_ids: [],
+                context_rules: {
+                    systemPromptAdditions: `Context Style: ${ctx.responseStyle}`,
+                    responseFormat: 'conversational',
+                    maxTokens: 2000,
+                },
+                deployment: {
+                    status: 'active',
+                    channels: ctx.channels,
+                    gatewayUrl: null, // Set by backend during provisioning
+                    deployedAt: null,
+                },
+                security: {
+                    inputSanitization: true,
+                    outputValidation: ctx.safetySettings.includes('validation'),
+                    promptInjectionProtection: ctx.safetySettings.includes('sandbox') ? 'strict' : 'basic',
+                    piiRedaction: ctx.safetySettings.includes('redaction'),
+                    rateLimits: {
+                        requestsPerMinute: 60,
+                        tokensPerHour: 100000,
+                    },
+                },
+            };
+
+            const response = await fetch('/api/agents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save agent');
+            }
+
             dispatch({ type: 'COMPLETE' });
+        } catch (error) {
+            console.error('Error saving agent:', error);
+            // In a real app, show a toast here
+        } finally {
+            setIsProcessing(false);
         }
     };
 
