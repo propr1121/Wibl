@@ -25,7 +25,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       primary: "gradient-brand text-white shadow-wibl hover:shadow-glow hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-wibl-teal focus-visible:ring-offset-2",
       secondary: "bg-white border-2 border-wibl-teal text-wibl-teal hover:bg-gradient-subtle hover:border-wibl-sky focus-visible:ring-2 focus-visible:ring-wibl-teal focus-visible:ring-offset-2",
-      ghost: "bg-transparent text-navy-700 hover:bg-gradient-subtle hover:text-wibl-teal focus-visible:ring-2 focus-visible:ring-wibl-teal/50 focus-visible:ring-offset-1",
+      ghost: "bg-transparent text-navy-700 border border-navy-200 hover:bg-navy-800 hover:text-white hover:border-navy-800 focus-visible:ring-2 focus-visible:ring-wibl-teal/50 focus-visible:ring-offset-1",
       coral: "bg-coral text-white shadow-wibl-coral hover:bg-coral-dark hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-coral focus-visible:ring-offset-2",
     };
 

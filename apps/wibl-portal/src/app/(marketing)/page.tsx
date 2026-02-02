@@ -29,12 +29,12 @@ import { cn } from '@/lib/utils';
 // --- Static Data ---
 
 const FEATURES = [
-    { id: 1, title: 'Conversational Builder', desc: 'Create complex AI agents by just talking to Wibl. No dragging-and-dropping nodes, no coding required.', icon: <MessageCircle className="text-wibl-teal" /> },
-    { id: 2, title: 'Multi-Channel Deployment', desc: 'One-click launch to Web, WhatsApp, Slack, Telegram, and Discord. Simply connected everywhere your users are.', icon: <Rocket className="text-wibl-coral" /> },
-    { id: 3, title: 'Knowledge Base', desc: 'Upload PDFs, scan URLs, or add Q&A pairs. Wibl processes your data in seconds for high-precision answers.', icon: <Layers className="text-wibl-sky" /> },
-    { id: 4, title: 'Tool Integrations', desc: 'Connect to your CRM, Calendar, or Knowledge Bases. Your agents can actually DO things, not just talk.', icon: <Zap className="text-wibl-mint" /> },
-    { id: 5, title: 'Real-Time Analytics', desc: 'Monitor every conversation. Track sentiment, resolution rates, and user satisfaction with deep-dive reports.', icon: <BarChart3 className="text-wibl-teal" /> },
-    { id: 6, title: 'Enterprise Security', desc: 'Bank-grade encryption, PII redaction, and prompt injection protection built-in by default.', icon: <ShieldCheck className="text-navy-900" /> },
+    { id: 1, title: 'Conversational Builder', desc: 'Just describe what you need. No drag-and-drop, no code.', icon: <MessageCircle className="text-wibl-teal" /> },
+    { id: 2, title: 'Multi-Channel Deploy', desc: 'One click to Web, WhatsApp, Slack, Telegram, Discord.', icon: <Rocket className="text-wibl-teal" /> },
+    { id: 3, title: 'Knowledge Base', desc: 'PDFs, URLs, Q&A pairs. Precision answers in seconds.', icon: <Layers className="text-wibl-sky" /> },
+    { id: 4, title: 'Tool Integrations', desc: 'CRM, Calendar, APIs. Agents that do, not just talk.', icon: <Zap className="text-wibl-mint" /> },
+    { id: 5, title: 'Real-Time Analytics', desc: 'Sentiment, resolution rates, satisfaction. Every metric.', icon: <BarChart3 className="text-wibl-teal" /> },
+    { id: 6, title: 'Enterprise Security', desc: 'Bank-grade encryption. PII redaction. Injection protection.', icon: <ShieldCheck className="text-wibl-teal" /> },
 ];
 
 const FAQS = [
@@ -136,13 +136,25 @@ function Navbar() {
 
 function Hero() {
     const { ref, isVisible } = useReveal();
+    const [showTyping, setShowTyping] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setShowTyping(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <section className="relative pt-32 pb-20 overflow-hidden min-h-screen flex flex-col justify-center">
-            {/* Background Elements */}
-            <div className="absolute inset-0 pointer-events-none -z-10 bg-[radial-gradient(circle_at_top_right,rgba(94,235,190,0.1),transparent_50%),radial-gradient(circle_at_bottom_left,rgba(255,107,107,0.05),transparent_50%)]" />
-            <div className="absolute top-0 right-[-10%] w-[30%] h-[30%] gradient-brand opacity-10 blur-[120px] rounded-full animate-float" />
-            <div className="absolute bottom-10 left-[-5%] w-[25%] h-[25%] bg-wibl-sky opacity-10 blur-[100px] rounded-full animate-float" style={{ animationDelay: '2s' }} />
+            {/* Premium Animated Background Orbs */}
+            <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
+                <div className="absolute top-[-5%] right-[-5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-wibl-mint/30 to-wibl-teal/20 orb-animated" />
+                <div className="absolute bottom-[10%] left-[-10%] w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-wibl-sky/25 to-wibl-teal/15 orb-animated-slow" />
+                <div className="absolute top-[40%] right-[20%] w-[200px] h-[200px] rounded-full bg-wibl-coral/10 orb-animated" style={{ animationDelay: '5s' }} />
+            </div>
+
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 pointer-events-none -z-10 opacity-[0.02]"
+                style={{ backgroundImage: 'radial-gradient(circle, #4ECDC4 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
             <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
                 <div ref={ref} className={cn("space-y-8 transition-all duration-1000", isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12")}>
@@ -156,7 +168,7 @@ function Hero() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Link href="/agents/new">
-                            <Button variant="coral" size="lg" className="h-16 text-lg group">
+                            <Button variant="coral" size="lg" className="h-16 text-lg group btn-shine">
                                 Start Building Free
                                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                             </Button>
@@ -173,41 +185,83 @@ function Hero() {
                     </div>
                 </div>
 
-                {/* Hero Visual */}
+                {/* Smart Hero Chat Mockup */}
                 <div className={cn("relative transition-all duration-1000 delay-300", isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12")}>
-                    <div className="relative z-10 p-4 lg:p-12">
-                        <div className="bg-white rounded-[2.5rem] shadow-2xl border-navy-50 border p-6 animate-float">
-                            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-navy-50">
-                                <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white shrink-0">
-                                    <MessageCircle size={20} />
+                    <div className="relative z-10 p-4 lg:p-8">
+                        <div className="glass-premium rounded-[2.5rem] shadow-2xl p-6 animate-float">
+                            {/* Header with live status */}
+                            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-navy-100/50">
+                                <div className="w-12 h-12 rounded-xl gradient-brand flex items-center justify-center text-white shrink-0 shadow-lg">
+                                    <Zap size={22} />
                                 </div>
-                                <div className="min-w-0">
-                                    <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest">BUILDING YOUR AGENT</p>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest">LIVE SESSION</p>
+                                        <div className="w-2 h-2 rounded-full bg-wibl-mint status-live" />
+                                    </div>
                                     <p className="text-sm font-bold text-navy-700 truncate">Wibl AI Creator</p>
                                 </div>
+                                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366]/10 text-xs font-bold text-[#25D366] border border-[#25D366]/20">
+                                    <svg viewBox="0 0 24 24" fill="#25D366" className="w-4 h-4"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" /></svg> WhatsApp ready
+                                </div>
                             </div>
+
+                            {/* Smart conversation showing real actions */}
                             <div className="space-y-4">
-                                <div className="bg-navy-50 rounded-2xl p-4 text-sm font-medium text-navy-600 max-w-[80%]">
-                                    Help customers find products and answer questions about shipping.
+                                <div className="bg-navy-50/80 rounded-2xl p-4 text-sm font-medium text-navy-600 max-w-[85%]">
+                                    I need an agent that can check our inventory, book demo calls, and answer pricing questions.
                                 </div>
+
                                 <div className="flex justify-end">
-                                    <div className="gradient-brand rounded-2xl p-4 text-sm font-bold text-white max-w-[80%] shadow-lg">
-                                        Understood! I've created your "Shop Guide" agent. Should I add the Shipping FAQ from your website?
+                                    <div className="gradient-brand rounded-2xl p-4 text-sm font-bold text-white max-w-[85%] shadow-lg">
+                                        <p className="mb-3">Perfect! I've created <span className="font-black">"SalesBot Pro"</span> with:</p>
+                                        <div className="space-y-2 text-xs font-medium bg-white/10 rounded-xl p-3">
+                                            <div className="flex items-center gap-2">
+                                                <Check size={14} className="text-wibl-mint" />
+                                                <span>Inventory API integration</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Check size={14} className="text-wibl-mint" />
+                                                <span>Calendly booking flow</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Check size={14} className="text-wibl-mint" />
+                                                <span>Pricing knowledge base</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="bg-navy-50 rounded-2xl p-4 text-sm font-medium text-navy-600 max-w-[80%]">
-                                    Yes, please do. And connect it to our WhatsApp.
+
+                                <div className="bg-navy-50/80 rounded-2xl p-4 text-sm font-medium text-navy-600 max-w-[85%]">
+                                    Connect it to our WhatsApp and website chat.
                                 </div>
-                                <div className="flex justify-end">
-                                    <div className="gradient-brand rounded-2xl p-4 text-sm font-bold text-white max-w-[80%] shadow-lg">
-                                        Done! Launching your agent on Web & WhatsApp now. 🚀
+
+                                {showTyping ? (
+                                    <div className="flex justify-end">
+                                        <div className="gradient-brand rounded-2xl px-5 py-4 flex items-center gap-1.5">
+                                            <div className="w-2 h-2 rounded-full bg-white typing-dot" />
+                                            <div className="w-2 h-2 rounded-full bg-white typing-dot" />
+                                            <div className="w-2 h-2 rounded-full bg-white typing-dot" />
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="flex justify-end">
+                                        <div className="gradient-brand rounded-2xl p-4 text-sm font-bold text-white max-w-[85%] shadow-lg">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <Rocket size={16} className="text-white" />
+                                                <span className="text-white font-black">Deployed!</span>
+                                            </div>
+                                            Your agent is now live on both channels. First visitor already asking about pricing! 🎉
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
-                    {/* Decorative shapes behind */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-wibl-teal/5 rounded-full blur-[100px] -z-10" />
+
+                    {/* Decorative elements */}
+                    <div className="absolute -bottom-4 -right-4 w-24 h-24 rounded-2xl bg-wibl-coral/10 blur-xl -z-10" />
+                    <div className="absolute -top-4 -left-4 w-32 h-32 rounded-full bg-wibl-mint/10 blur-2xl -z-10" />
                 </div>
             </div>
         </section>
@@ -235,7 +289,11 @@ function HowItWorks() {
     const { ref, isVisible } = useReveal();
 
     return (
-        <section id="how-it-works" className="py-32 bg-canvas-subtle overflow-hidden">
+        <section id="how-it-works" className="py-32 bg-canvas-subtle overflow-hidden relative">
+            {/* Subtle background decoration */}
+            <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-wibl-mint/5 rounded-full blur-[150px] -z-10" />
+            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-wibl-sky/5 rounded-full blur-[120px] -z-10" />
+
             <div className="max-w-7xl mx-auto px-6">
                 <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
                     <Badge variant="success" size="md">SIMPLY CONNECTED</Badge>
@@ -245,28 +303,29 @@ function HowItWorks() {
                     <p className="text-lg text-navy-500 font-medium">No coding, no complex builders, no headache.</p>
                 </div>
 
-                <div ref={ref} className="grid md:grid-cols-3 gap-12 relative">
-                    {/* Connection lines (Desktop only) */}
-                    <div className="hidden md:block absolute top-[20%] left-0 w-full h-px bg-gradient-to-r from-transparent via-navy-100 to-transparent -z-10" />
+                <div ref={ref} className="grid md:grid-cols-3 gap-8">
 
                     {[
-                        { step: '01', title: 'Describe', desc: 'Tell Wibl what you need in plain English. Our creator understands intent and builds the core logic for you.', icon: <MessageCircle /> },
-                        { step: '02', title: 'Train', desc: 'Upload documents, scan your website, or add Q&A pairs to give your agent a deep knowledge base.', icon: <Layers /> },
-                        { step: '03', title: 'Deploy', desc: 'Connect to your favorite channels with a single click. Go live on Web, WhatsApp, or Slack instantly.', icon: <Rocket /> },
+                        { step: '01', title: 'Describe', desc: 'Tell Wibl what you need in plain English. Intent understood, logic built.', icon: <MessageCircle /> },
+                        { step: '02', title: 'Train', desc: 'Upload docs, scan URLs, or add Q&A pairs for precision answers.', icon: <Layers /> },
+                        { step: '03', title: 'Deploy', desc: 'One click to go live on Web, WhatsApp, or Slack. Instantly.', icon: <Rocket /> },
                     ].map((step, idx) => (
                         <div key={idx} className={cn(
-                            "group transition-all duration-1000",
+                            "group transition-all duration-700",
                             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-                        )} style={{ animationDelay: `${idx * 200}ms` }}>
-                            <div className="bg-white rounded-[2rem] p-8 h-full shadow-lg border border-navy-100 hover:border-wibl-teal hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="w-14 h-14 rounded-2xl bg-wibl-teal/10 text-wibl-teal flex items-center justify-center group-hover:gradient-brand group-hover:text-white transition-all duration-500">
+                        )} style={{ transitionDelay: `${idx * 150}ms` }}>
+                            <div className="glass-premium rounded-[2rem] p-8 h-full card-hover-lift group-hover:border-wibl-teal/50 relative overflow-hidden">
+                                {/* Shimmer effect on hover */}
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 shimmer pointer-events-none" />
+
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                    <div className="w-14 h-14 rounded-2xl bg-wibl-teal/10 text-wibl-teal flex items-center justify-center group-hover:bg-white group-hover:shadow-lg transition-all duration-500">
                                         {step.icon}
                                     </div>
-                                    <span className="text-4xl font-display font-black text-navy-200 group-hover:text-wibl-teal/30 transition-colors uppercase">{step.step}</span>
+                                    <span className="text-5xl font-display font-black text-navy-200 group-hover:text-wibl-teal transition-colors">{step.step}</span>
                                 </div>
-                                <h3 className="text-2xl font-display font-black text-navy-800 mb-3">{step.title}</h3>
-                                <p className="text-navy-600 font-medium leading-relaxed">{step.desc}</p>
+                                <h3 className="text-2xl font-display font-black text-navy-800 mb-3 relative z-10">{step.title}</h3>
+                                <p className="text-navy-600 font-medium leading-relaxed relative z-10">{step.desc}</p>
                             </div>
                         </div>
                     ))}
@@ -280,39 +339,42 @@ function Features() {
     const { ref, isVisible } = useReveal();
 
     return (
-        <section id="features" className="py-32 bg-white">
+        <section id="features" className="py-32 bg-white relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute top-[50%] right-[-10%] w-[500px] h-[500px] bg-wibl-teal/5 rounded-full blur-[150px] -z-10" />
+
             <div className="max-w-7xl mx-auto px-6">
-                <div className="grid lg:grid-cols-2 gap-20 items-center mb-20">
+                <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
                     <div className="space-y-6">
                         <Badge variant="info" size="md">POWERFUL FEATURES</Badge>
                         <h2 className="text-4xl md:text-5xl font-display font-black text-navy-800 tracking-tighter">
-                            Everything you need to <br />
-                            <span className="text-wibl-teal">automate with confidence.</span>
+                            Everything you need. <br />
+                            <span className="text-wibl-teal">Nothing you don't.</span>
                         </h2>
                         <p className="text-lg text-navy-500 font-medium leading-relaxed">
-                            Wibl combines ease of use with enterprise-grade capabilities. Build simple chatbots or complex operational agents in minutes.
+                            Enterprise power meets effortless simplicity.
                         </p>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-navy-50 rounded-3xl p-6 flex flex-col items-center justify-center aspect-square text-center space-y-2 group hover:bg-navy-800 hover:text-white transition-all">
-                            <span className="text-3xl font-display font-black text-navy-800 group-hover:text-white">500+</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-navy-400">Companies</span>
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="glass-premium rounded-3xl p-8 flex flex-col items-center justify-center aspect-square text-center group card-hover-lift cursor-default">
+                            <span className="text-4xl font-display font-black text-navy-800 group-hover:text-gradient transition-all">500+</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-navy-400 mt-2">Companies</span>
                         </div>
-                        <div className="bg-wibl-mint/10 rounded-3xl p-6 flex flex-col items-center justify-center aspect-square text-center mt-8 space-y-2 group hover:gradient-brand hover:text-white transition-all">
-                            <span className="text-3xl font-display font-black text-wibl-teal group-hover:text-white">10M+</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-navy-400">Conversations</span>
+                        <div className="glass-premium rounded-3xl p-8 flex flex-col items-center justify-center aspect-square text-center mt-8 group card-hover-lift cursor-default border-wibl-teal/20">
+                            <span className="text-4xl font-display font-black text-wibl-teal">10M+</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-navy-400 mt-2">Conversations</span>
                         </div>
                     </div>
                 </div>
 
-                <div ref={ref} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div ref={ref} className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {FEATURES.map((feature, idx) => (
                         <div key={feature.id} className={cn(
                             "transition-all duration-700",
-                            isVisible ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                        )} style={{ animationDelay: `${idx * 100}ms` }}>
-                            <div className="p-8 h-full rounded-2xl border border-navy-50 bg-canvas-subtle hover:bg-white hover:shadow-xl hover:border-wibl-teal/20 transition-all group">
-                                <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                        )} style={{ transitionDelay: `${idx * 80}ms` }}>
+                            <div className="p-8 h-full rounded-2xl glass-premium card-hover-lift group border border-transparent hover:border-wibl-teal/30 transition-all duration-300">
+                                <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center mb-6 shadow-sm group-hover:bg-wibl-teal/10 group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
                                     {feature.icon}
                                 </div>
                                 <h3 className="text-xl font-display font-black text-navy-800 mb-3">{feature.title}</h3>
@@ -395,7 +457,7 @@ function UseCases() {
 
                             <div className="space-y-8 animate-fade-in" key={activeTab}>
                                 <div className="space-y-4">
-                                    <h3 className="text-3xl md:text-5xl font-display font-black text-navy-800 leading-tight">
+                                    <h3 className="text-3xl md:text-[2.75rem] font-display font-black text-navy-800 leading-tight">
                                         {activeCase.title}
                                     </h3>
                                     <p className="text-xl text-navy-500 font-medium leading-relaxed max-w-xl">
@@ -403,16 +465,20 @@ function UseCases() {
                                     </p>
                                 </div>
 
-                                <div className="p-8 bg-navy-50 rounded-3xl relative overflow-hidden">
-                                    <div className="absolute top-4 left-4 w-10 h-10 gradient-brand rounded-full flex items-center justify-center text-white shadow-lg">
-                                        <Quote size={16} />
+                                <div className="p-5 bg-navy-50 rounded-2xl">
+                                    {/* Quote row */}
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 gradient-brand rounded-full flex items-center justify-center text-white shadow-lg shrink-0">
+                                            <Quote size={14} />
+                                        </div>
+                                        <p className="text-base font-display font-black text-navy-700 italic whitespace-nowrap">
+                                            "{activeCase.quote}"
+                                        </p>
                                     </div>
-                                    <p className="text-xl font-display font-black text-navy-700 italic pl-14">
-                                        "{activeCase.quote}"
-                                    </p>
-                                    <div className="mt-6 flex items-center justify-between">
+                                    {/* Footer row */}
+                                    <div className="mt-4 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-navy-800 flex items-center justify-center text-[10px] font-black text-white">
+                                            <div className="w-8 h-8 rounded-lg bg-navy-800 flex items-center justify-center text-[10px] font-black text-white shrink-0">
                                                 {activeCase.logo[0]}
                                             </div>
                                             <span className="text-xs font-black text-navy-400 uppercase tracking-widest">{activeCase.logo} Customer</span>
@@ -447,7 +513,7 @@ function Pricing() {
 
             <div className="max-w-7xl mx-auto px-6 relative z-10">
                 <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
-                    <Badge variant="coral" size="md">SIMPLE PRICING</Badge>
+                    <Badge variant="coral" size="md" className="bg-wibl-coral text-white border-wibl-coral">SIMPLE PRICING</Badge>
                     <h2 className="text-4xl md:text-5xl font-display font-black text-white tracking-tighter">
                         Choose the right plan for <br />
                         your scaling needs.
@@ -455,7 +521,7 @@ function Pricing() {
 
                     {/* Toggle */}
                     <div className="flex items-center justify-center gap-4 pt-4">
-                        <span className={cn("text-xs font-black uppercase tracking-widest transition-colors", billingPeriod === 'mo' ? "text-white" : "text-navy-400")}>Monthly</span>
+                        <span className={cn("text-xs font-black uppercase tracking-widest transition-colors", billingPeriod === 'mo' ? "text-white" : "text-white/50")}>Monthly</span>
                         <button
                             onClick={() => setBillingPeriod(billingPeriod === 'mo' ? 'yr' : 'mo')}
                             className="w-14 h-8 bg-navy-800 rounded-full p-1 relative transition-colors border border-navy-700"
@@ -465,7 +531,7 @@ function Pricing() {
                                 billingPeriod === 'yr' ? "translate-x-6" : "translate-x-0"
                             )} />
                         </button>
-                        <span className={cn("text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2", billingPeriod === 'yr' ? "text-white" : "text-navy-400")}>
+                        <span className={cn("text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2", billingPeriod === 'yr' ? "text-white" : "text-white/50")}>
                             Yearly
                             <Badge variant="teal" size="sm" className="bg-wibl-mint/10 border-transparent text-wibl-mint">Save 15%</Badge>
                         </span>
@@ -522,71 +588,51 @@ function Pricing() {
 }
 
 function Testimonials() {
-    const [activeIdx, setActiveIdx] = useState(0);
-
     return (
-        <section className="py-32 bg-white overflow-hidden">
-            <div className="max-w-7xl mx-auto px-6">
-                <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-20">
-                    <div className="space-y-4">
-                        <Badge variant="info" size="md">USER SUCCESS</Badge>
-                        <h2 className="text-4xl md:text-5xl font-display font-black text-navy-800 tracking-tighter">
-                            Wibl users are building <br />
-                            <span className="text-gradient">the future of automation.</span>
+        <section className="py-24 bg-white overflow-hidden">
+            <div className="max-w-7xl mx-auto px-6 mb-12">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="space-y-3 text-center md:text-left">
+                        <Badge variant="info" size="md">TRUSTED BY TEAMS</Badge>
+                        <h2 className="text-3xl md:text-4xl font-display font-black text-navy-800 tracking-tighter">
+                            What our users <span className="text-gradient">are saying.</span>
                         </h2>
                     </div>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => setActiveIdx((activeIdx - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
-                            className="w-12 h-12 rounded-full border border-navy-100 flex items-center justify-center text-navy-600 hover:border-wibl-teal hover:text-wibl-teal transition-all"
-                        >
-                            <ChevronDown className="rotate-90" />
-                        </button>
-                        <button
-                            onClick={() => setActiveIdx((activeIdx + 1) % TESTIMONIALS.length)}
-                            className="w-12 h-12 rounded-full border border-navy-100 flex items-center justify-center text-navy-600 hover:border-wibl-teal hover:text-wibl-teal transition-all"
-                        >
-                            <ChevronDown className="-rotate-90" />
-                        </button>
+                    <div className="flex items-center gap-3">
+                        {[...Array(5)].map((_, i) => <Star key={i} fill="currentColor" className="text-wibl-teal" size={20} />)}
+                        <span className="text-sm font-bold text-navy-600 ml-2">5.0 average rating</span>
                     </div>
                 </div>
+            </div>
 
-                <div className="relative">
-                    <div className="flex transition-all duration-700 ease-in-out" style={{ transform: `translateX(-${activeIdx * 100}%)` }}>
-                        {TESTIMONIALS.map((t, i) => (
-                            <div key={i} className="w-full flex-shrink-0">
-                                <div className="grid lg:grid-cols-5 gap-12 items-center">
-                                    <div className="lg:col-span-3 space-y-8">
-                                        <Quote className="text-wibl-teal opacity-20 w-16 h-16" />
-                                        <p className="text-3xl md:text-4xl font-display font-black text-navy-800 leading-tight">
-                                            "{t.quote}"
-                                        </p>
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-16 h-16 rounded-2xl bg-gradient-subtle flex items-center justify-center text-wibl-teal font-display font-black text-2xl">
-                                                {t.name[0]}
-                                            </div>
-                                            <div>
-                                                <p className="font-display font-black text-navy-800">{t.name}</p>
-                                                <p className="text-sm text-navy-500 font-medium">{t.role}, {t.company}</p>
-                                            </div>
-                                        </div>
+            {/* Marquee Container */}
+            <div className="relative">
+                {/* Gradient faders */}
+                <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+                <div className="flex gap-6 animate-marquee hover:[animation-play-state:paused]">
+                    {[...TESTIMONIALS, ...TESTIMONIALS].map((t, i) => (
+                        <div key={i} className="flex-shrink-0 w-[400px]">
+                            <div className="glass-premium rounded-2xl p-6 h-full">
+                                <div className="flex items-center gap-1 mb-4">
+                                    {[...Array(t.rating)].map((_, j) => <Star key={j} fill="currentColor" className="text-wibl-teal" size={14} />)}
+                                </div>
+                                <p className="text-lg font-bold text-navy-700 mb-6 leading-relaxed">
+                                    "{t.quote}"
+                                </p>
+                                <div className="flex items-center gap-3 pt-4 border-t border-navy-100/50">
+                                    <div className="w-10 h-10 rounded-xl gradient-brand flex items-center justify-center text-white font-bold text-sm">
+                                        {t.name[0]}
                                     </div>
-                                    <div className="lg:col-span-2 hidden lg:block">
-                                        <div className="relative group">
-                                            <div className="absolute inset-0 gradient-brand opacity-0 group-hover:opacity-10 blur-3xl transition-opacity animate-pulse-soft" />
-                                            <div className="bg-canvas-subtle rounded-[2rem] p-12 text-center border border-navy-50 shadow-inner group-hover:scale-105 transition-all duration-700">
-                                                <div className="flex justify-center gap-1 mb-6">
-                                                    {[...Array(t.rating)].map((_, i) => <Star key={i} fill="currentColor" className="text-wibl-teal" size={24} />)}
-                                                </div>
-                                                <p className="text-xs font-black text-navy-300 uppercase tracking-widest mb-1">Company Rating</p>
-                                                <p className="text-6xl font-display font-black text-navy-800">5.0</p>
-                                            </div>
-                                        </div>
+                                    <div>
+                                        <p className="font-bold text-navy-800 text-sm">{t.name}</p>
+                                        <p className="text-xs text-navy-500">{t.role}, {t.company}</p>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </section>
@@ -737,7 +783,7 @@ function FinalCTA() {
 
 export default function MarketingPage() {
     return (
-        <div className="min-h-screen bg-canvas-light selection:bg-wibl-teal selection:text-white">
+        <div className="min-h-screen bg-canvas-light selection:bg-wibl-teal selection:text-white grain-overlay">
             <Navbar />
             <Hero />
             <SocialProof />
