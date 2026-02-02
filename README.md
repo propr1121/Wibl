@@ -16,8 +16,8 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
 
-**Wibl** is a *simply connected AI agent platform* built on top of the Clawdbot system.
-It empowers you to design, deploy, and monitor enterprise-grade intelligent assistants on the channels you already use (WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, Microsoft Teams, WebChat). Wibl handles the complexity of RAG, security, and multi-channel orchestration so you can focus on the conversation.
+**Wibl** is a *simply connected AI workforce platform* built on top of the Clawdbot system.
+It empowers you to design, deploy, and monitor an enterprise-grade AI Workforce on the channels you already use (WhatsApp, Slack, Telegram, WebChat). Wibl handles the complexity of RAG, Intelligence Libraries, and multi-channel orchestration so you can focus on scale.
 
 If you want a personal, single-user assistant that feels local, fast, and always-on, this is it.
 

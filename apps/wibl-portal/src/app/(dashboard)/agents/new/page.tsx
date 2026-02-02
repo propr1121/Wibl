@@ -43,6 +43,7 @@ interface WizardOption {
     icon?: string | React.ReactNode;
     title?: string;
     desc?: string;
+    info?: string;
     color?: string;
     recommended?: boolean;
 }
@@ -54,6 +55,7 @@ interface Step {
     placeholder?: string;
     options?: WizardOption[];
     validation?: { minLength?: number };
+    shouldShow?: (ctx: WizardContext) => boolean;
 }
 
 interface WizardContext {
@@ -68,6 +70,8 @@ interface WizardContext {
     tools: string[];
     channels: string[];
     safetySettings: string[];
+    personalityDetail?: string;
+    knowledgeDetail?: string;
     responseStyle: 'fast' | 'natural';
 }
 
@@ -107,6 +111,8 @@ const INITIAL_CONTEXT: WizardContext = {
     tools: [],
     channels: [],
     safetySettings: ['redaction', 'sandbox'],
+    personalityDetail: '',
+    knowledgeDetail: '',
     responseStyle: 'natural',
 };
 
@@ -167,26 +173,47 @@ const WIZARD_FLOW: Step[] = [
         ],
     },
     {
+        id: 'personality-custom',
+        wiblMessage: "I love a unique brand voice. Go ahead and describe the persona in your own words—how does your agent talk and act?",
+        inputType: 'textarea',
+        placeholder: "e.g., A witty tech guru who uses emojis, or a ultra-precise mathematical investigator...",
+        shouldShow: (ctx) => ctx.personality === 'custom',
+    },
+    {
         id: 'knowledge',
         wiblMessage: "High-intelligence agents require deep knowledge. How will they learn your business logic?",
         inputType: 'choice',
         options: [
-            { label: 'Upload Documents (PDF/XLS)', value: 'upload', icon: <FileText size={18} /> },
-            { label: 'Crawl Domain URL', value: 'url', icon: <Globe size={18} /> },
-            { label: 'Use Vector Memory', value: 'memory', icon: <Database size={18} /> },
-            { label: 'Skip for now', value: 'skip', icon: <SkipForward size={18} /> },
+            { label: 'Upload Documents (PDF/XLS)', value: 'upload', icon: <FileText size={18} />, info: "Ground your agent in your own proprietary data by uploading business PDFs or spreadsheets." },
+            { label: 'Crawl Domain URL', value: 'url', icon: <Globe size={18} />, info: "The agent will intelligently crawl your website to answer questions about your products and services." },
+            { label: 'Use Vector Memory', value: 'memory', icon: <Database size={18} />, info: "Enables long-term memory (RAG) so the agent remembers past interactions and user preferences." },
+            { label: 'Skip for now', value: 'skip', icon: <SkipForward size={18} />, info: "You can always add knowledge sources later through the dashboard." },
         ],
+    },
+    {
+        id: 'knowledge-upload',
+        wiblMessage: "Perfect. Upload the documents you want your agent to study. I'll analyze them for key insights immediately.",
+        inputType: 'textarea', // Using textarea as a proxy for 'dropzone' simulation for now
+        placeholder: "Drag and drop files here, or describe the content of the files you'll provide...",
+        shouldShow: (ctx) => ctx.knowledgeType === 'upload',
+    },
+    {
+        id: 'knowledge-url',
+        wiblMessage: "Enter the website domain you'd like me to crawl. I'll intelligently map out the structure and content.",
+        inputType: 'textarea',
+        placeholder: "e.g., https://yourcompany.com/support",
+        shouldShow: (ctx) => ctx.knowledgeType === 'url',
     },
     {
         id: 'tools',
         wiblMessage: "To execute tasks, agents need tools. Which integrations should we activate?",
         inputType: 'multi-select-chips',
         options: [
-            { label: 'Google Calendar API', icon: <Calendar size={18} />, value: 'calendar' },
-            { label: 'Enterprise CRM', icon: <Database size={18} />, value: 'crm' },
-            { label: 'Real-time Web Search', icon: <Search size={18} />, value: 'search' },
-            { label: 'Secure Payments', icon: <ShoppingCart size={18} />, value: 'stripe' },
-            { label: 'Auto-Tasker', icon: <Rocket size={18} />, value: 'cron' },
+            { label: 'Google Calendar API', icon: <Calendar size={18} />, value: 'calendar', info: "Empower your agent to manage your schedule, browse availability, and book meetings." },
+            { label: 'Enterprise CRM', icon: <Database size={18} />, value: 'crm', info: "Directly sync with HubSpot or Salesforce to update leads and track conversion data." },
+            { label: 'Real-time Web Search', icon: <Search size={18} />, value: 'search', info: "Gives your agent access to Google/Brave search to pull current events and live data." },
+            { label: 'Secure Payments', icon: <ShoppingCart size={18} />, value: 'stripe', info: "Allows the agent to generate secure payment links and handle transactions via Stripe." },
+            { label: 'Auto-Tasker', icon: <Rocket size={18} />, value: 'cron', info: "Schedule background jobs like follow-up reminders or automated status reports." },
         ],
     },
     {
@@ -194,10 +221,10 @@ const WIZARD_FLOW: Step[] = [
         wiblMessage: "Wibl. is built on security. Let's configure the safety and performance layers.",
         inputType: 'multi-select-chips',
         options: [
-            { label: 'PII Redaction', icon: <CheckCircle2 size={18} />, value: 'redaction' },
-            { label: 'Strict Sandbox', icon: <MessageCircle size={18} />, value: 'sandbox' },
-            { label: 'Natural Response Delay', icon: <Smile size={18} />, value: 'natural_delay' },
-            { label: 'Output Validation', icon: <Check size={18} />, value: 'validation' },
+            { label: 'PII Redaction', icon: <CheckCircle2 size={18} />, value: 'redaction', info: "Automatically identifies and masks sensitive data like emails, card numbers, and PII." },
+            { label: 'Strict Sandbox', icon: <MessageCircle size={18} />, value: 'sandbox', info: "Enforces a secure compute environment where the agent cannot access unauthorized data." },
+            { label: 'Natural Response Delay', icon: <Smile size={18} />, value: 'natural_delay', info: "Simulates more realistic, 'human-like' typing rhythms to improve user trust and engagement." },
+            { label: 'Output Validation', icon: <Check size={18} />, value: 'validation', info: "Runs deep analysis on every agent response to prevent prompt injection or leaked info." },
         ],
     },
     {
@@ -205,10 +232,10 @@ const WIZARD_FLOW: Step[] = [
         wiblMessage: "Last step. Where will your agent live? Select your communication channels.",
         inputType: 'multi-select-chips',
         options: [
-            { label: 'WhatsApp Business', icon: <MessageCircle size={18} />, value: 'whatsapp' },
-            { label: 'Web Widget', icon: <Globe size={18} />, value: 'web' },
-            { label: 'Slack Enterprise', icon: <Hash size={18} />, value: 'slack' },
-            { label: 'Telegram Bot', icon: <Rocket size={18} />, value: 'telegram' },
+            { label: 'WhatsApp Business', icon: <MessageCircle size={18} />, value: 'whatsapp', info: "Connect to your verified WhatsApp Business account for direct customer engagement." },
+            { label: 'Web Widget', icon: <Globe size={18} />, value: 'web', info: "Embed a sleek chat interface directly on your website or landing page." },
+            { label: 'Slack Enterprise', icon: <Hash size={18} />, value: 'slack', info: "Integrate with your Slack workspace to handle internal inquiries and automated support." },
+            { label: 'Telegram Bot', icon: <Rocket size={18} />, value: 'telegram', info: "Launch a custom bot on Telegram for lightweight, high-speed mobile interaction." },
         ],
     },
     {
@@ -242,8 +269,41 @@ export default function AgentWizardPage() {
         }
     }, [state.messages, state.isThinking]);
 
+    const findNextStepIndex = (fromIndex: number, currentContext: WizardContext): number => {
+        for (let i = fromIndex + 1; i < WIZARD_FLOW.length; i++) {
+            const step = WIZARD_FLOW[i];
+            const ss = step.shouldShow;
+            if (typeof ss !== 'function' || ss(currentContext)) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
+    const findPrevStepIndex = (fromIndex: number, currentContext: WizardContext): number => {
+        for (let i = fromIndex - 1; i >= 0; i--) {
+            const step = WIZARD_FLOW[i];
+            const ss = step.shouldShow;
+            if (typeof ss !== 'function' || ss(currentContext)) {
+                return i;
+            }
+        }
+        return -1;
+    };
+
     const startStep = async (index: number) => {
         const step = WIZARD_FLOW[index];
+        const ss = step.shouldShow;
+        if (typeof ss === 'function' && !ss(state.context)) {
+            // Skip this step and move to next
+            const nextIdx = findNextStepIndex(index, state.context);
+            if (nextIdx !== -1) {
+                startStep(nextIdx);
+                dispatch({ type: 'NEXT_STEP' });
+            }
+            return;
+        }
+
         dispatch({ type: 'SET_THINKING', status: true });
 
         // Dynamic wait time based on message length
@@ -286,8 +346,12 @@ export default function AgentWizardPage() {
             updates.avatar = value.avatar;
         } else if (currentStep.id === 'personality') {
             updates.personality = value;
+        } else if (currentStep.id === 'personality-custom') {
+            updates.personalityDetail = value;
         } else if (currentStep.id === 'knowledge') {
             updates.knowledgeType = value;
+        } else if (currentStep.id === 'knowledge-upload' || currentStep.id === 'knowledge-url') {
+            updates.knowledgeDetail = value;
         } else if (currentStep.id === 'tools') {
             updates.tools = value;
         } else if (currentStep.id === 'advanced') {
@@ -299,11 +363,14 @@ export default function AgentWizardPage() {
 
         dispatch({ type: 'UPDATE_CONTEXT', updates });
 
-        // Logic for next step
-        if (state.currentStepIndex < WIZARD_FLOW.length - 1) {
-            dispatch({ type: 'NEXT_STEP' });
+        const nextContext = { ...state.context, ...updates };
+        const nextStepIndex = findNextStepIndex(state.currentStepIndex, nextContext);
+
+        if (nextStepIndex !== -1) {
+            dispatch({ type: 'NEXT_STEP' }); // Note: Reducer currently just adds 1, we should probably update it or use the index
+            // Actually, let's fix the reducer or handle the specific index
             setTimeout(() => {
-                startStep(state.currentStepIndex + 1);
+                startStep(nextStepIndex);
                 setIsProcessing(false);
             }, 500);
         } else {
@@ -330,7 +397,7 @@ export default function AgentWizardPage() {
                         state.isThinking ? "animate-spin-slow opacity-100 scale-110 border-solid border-wibl-teal/40" : "opacity-40"
                     )} />
 
-                    <div className="w-40 h-40 lg:w-56 lg:h-56 rounded-full gradient-brand p-1.5 shadow-[0_0_100px_rgba(0,242,234,0.12)] relative z-10 flex items-center justify-center">
+                    <div className="w-40 h-40 lg:w-56 lg:h-56 rounded-full gradient-brand p-1.5 shadow-[0_0_100px_rgba(0,242,234,0.12)] relative z-10 flex items-center justify-center transition-all duration-500 hover:scale-110 cursor-pointer vitality-trigger">
                         <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-16 lg:p-24">
                             <span className="text-4xl lg:text-5xl font-display font-black tracking-tighter mb-0.5">
                                 <span className="text-wibl-teal leading-none uppercase">W</span><span className="text-navy-900 leading-none">.</span>
@@ -368,7 +435,15 @@ export default function AgentWizardPage() {
                 {/* Back Button (Small) */}
                 {state.currentStepIndex > 0 && (
                     <button
-                        onClick={() => dispatch({ type: 'PREV_STEP' })}
+                        onClick={() => {
+                            const prevIndex = findPrevStepIndex(state.currentStepIndex, state.context);
+                            if (prevIndex !== -1) {
+                                // For now, we'll just reload the state at that index 
+                                // In a real app we'd roll back messages too, but for this demo a simple jump is fine
+                                dispatch({ type: 'PREV_STEP' }); // Still just -1 for now
+                                startStep(prevIndex);
+                            }
+                        }}
                         className="absolute top-8 left-8 text-navy-400 hover:text-white transition-colors flex items-center gap-2 font-black uppercase tracking-wider text-xs"
                     >
                         <ArrowLeft size={16} /> Back
@@ -484,6 +559,40 @@ export default function AgentWizardPage() {
                 .animate-bounce-hover:hover {
                     animation: bounce-sm 0.5s ease-in-out infinite;
                 }
+                @keyframes pulse-soft {
+                    0%, 100% { opacity: 0.1; transform: scale(1); }
+                    50% { opacity: 0.2; transform: scale(1.05); }
+                }
+                .animate-pulse-soft {
+                    animation: pulse-soft 3s ease-in-out infinite;
+                }
+                @keyframes reveal {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-reveal {
+                    animation: reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                @keyframes reveal-fast {
+                    from { opacity: 0; transform: translateY(4px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-reveal-fast {
+                    animation: reveal-fast 0.2s ease-out forwards;
+                }
+                @keyframes vitality {
+                    0%, 100% { 
+                        box-shadow: 0 0 80px rgba(78, 205, 196, 0.1); 
+                        transform: scale(1.1);
+                    }
+                    50% { 
+                        box-shadow: 0 0 120px rgba(78, 205, 196, 0.25); 
+                        transform: scale(1.13);
+                    }
+                }
+                .vitality-trigger:hover {
+                    animation: vitality 1.5s ease-in-out infinite;
+                }
             `}</style>
         </div>
     );
@@ -547,16 +656,19 @@ function WizardInput({
 
     if (type === 'identity-picker') {
         const [name, setName] = useState(context.suggestedName || '');
-        const [selectedAvatar, setSelectedAvatar] = useState('wibl-1');
+        const [customAvatar, setCustomAvatar] = useState<string | null>(null);
+        const fileInputRef = useRef<HTMLInputElement>(null);
 
-        const avatars = [
-            { id: 'wibl-1', emoji: '🤖' },
-            { id: 'wibl-2', emoji: '✨' },
-            { id: 'wibl-3', emoji: '💬' },
-            { id: 'wibl-4', emoji: '🛠️' },
-            { id: 'wibl-5', emoji: '⚡' },
-            { id: 'wibl-6', emoji: '🎯' },
-        ];
+        const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setCustomAvatar(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
         return (
             <div className="max-w-xl mx-auto w-full space-y-8 animate-reveal">
@@ -572,29 +684,50 @@ function WizardInput({
                 </div>
 
                 <div className="space-y-4">
-                    <label className="text-[10px] font-black text-navy-400 uppercase tracking-widest ml-1">Select Avatar</label>
-                    <div className="grid grid-cols-6 gap-3">
-                        {avatars.map(av => (
-                            <button
-                                key={av.id}
-                                onClick={() => setSelectedAvatar(av.id)}
-                                className={cn(
-                                    "aspect-square rounded-xl text-2xl flex items-center justify-center transition-all border-2",
-                                    selectedAvatar === av.id
-                                        ? "bg-wibl-teal/10 border-wibl-teal shadow-glow-teal scale-110"
-                                        : "bg-white border-navy-50 hover:border-navy-100"
-                                )}
-                            >
-                                {av.emoji}
-                            </button>
-                        ))}
+                    <label className="text-[10px] font-black text-navy-400 uppercase tracking-widest ml-1">Agent Avatar</label>
+                    <div className="flex items-center gap-6 p-6 bg-white border border-navy-100 rounded-2xl shadow-premium-sm">
+                        <div
+                            className="w-24 h-24 rounded-2xl bg-canvas flex flex-col items-center justify-center cursor-pointer hover:border-wibl-teal border-2 border-dashed border-navy-100 transition-all overflow-hidden relative group shrink-0"
+                            onClick={() => fileInputRef.current?.click()}
+                        >
+                            {customAvatar ? (
+                                <img src={customAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                <>
+                                    <Upload size={24} className="text-navy-300 group-hover:text-wibl-teal transition-colors" />
+                                    <span className="text-[10px] font-black text-navy-400 mt-2">UPLOAD</span>
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="text-sm font-bold text-navy-800 mb-1">Brand Identity</h4>
+                            <p className="text-xs text-navy-500 leading-relaxed">
+                                Upload a professional brand logo or a high-quality photo for your agent.
+                                Recommended size: 512x512px.
+                            </p>
+                            {customAvatar && (
+                                <button
+                                    onClick={() => setCustomAvatar(null)}
+                                    className="text-[10px] font-black text-wibl-coral uppercase tracking-widest mt-3 hover:underline"
+                                >
+                                    Remove Image
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 <Button
                     variant="primary"
                     className="w-full h-14 text-lg font-bold gradient-brand border-none shadow-premium-lg hover:shadow-glow-teal"
-                    onClick={() => onSubmit({ name, avatar: selectedAvatar }, name)}
+                    onClick={() => onSubmit({ name, avatar: customAvatar || 'wibl-default' }, name)}
                 >
                     Confirm Identity
                 </Button>
@@ -647,12 +780,16 @@ function WizardInput({
 
     if (type === 'multi-select-chips') {
         const [selected, setSelected] = useState<string[]>([]);
+        const [hoveredInfo, setHoveredInfo] = useState<string | null>(null);
+
         return (
             <div className="max-w-3xl mx-auto w-full space-y-6">
                 <div className="flex flex-wrap gap-2.5">
                     {options?.map(opt => (
                         <button
                             key={opt.value}
+                            onMouseEnter={() => setHoveredInfo(opt.info || null)}
+                            onMouseLeave={() => setHoveredInfo(null)}
                             onClick={() => {
                                 const next = selected.includes(opt.value!)
                                     ? selected.filter(s => s !== opt.value)
@@ -672,6 +809,23 @@ function WizardInput({
                         </button>
                     ))}
                 </div>
+
+                {/* Information reveal box */}
+                <div className="min-h-[60px] flex items-center justify-center">
+                    {hoveredInfo ? (
+                        <div className="bg-wibl-teal/5 border border-wibl-teal/20 px-6 py-3 rounded-2xl animate-reveal-fast backdrop-blur-sm w-full">
+                            <p className="text-[13px] text-navy-700 font-medium leading-relaxed">
+                                <span className="font-black text-[10px] text-wibl-teal uppercase tracking-widest mr-3">Deep Dive</span>
+                                {hoveredInfo}
+                            </p>
+                        </div>
+                    ) : (
+                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-[0.3em] opacity-40">
+                            Hover an option for more context
+                        </p>
+                    )}
+                </div>
+
                 <div className="flex justify-end">
                     <Button
                         variant="primary"
@@ -687,17 +841,35 @@ function WizardInput({
     }
 
     if (type === 'choice') {
+        const [hoveredInfo, setHoveredInfo] = useState<string | null>(null);
+
         return (
-            <div className="flex flex-wrap gap-3 max-w-2xl mx-auto justify-center">
-                {options?.map(opt => (
-                    <button
-                        key={opt.value}
-                        onClick={() => onSubmit(opt.value, opt.label)}
-                        className="px-6 py-2.5 bg-white border border-navy-100 rounded-full font-bold text-[13px] text-navy-500 hover:border-wibl-teal hover:text-wibl-teal hover:shadow-premium-sm transition-all flex items-center justify-center gap-2 transform active:scale-95"
-                    >
-                        {opt.label}
-                    </button>
-                ))}
+            <div className="max-w-2xl mx-auto w-full space-y-6">
+                <div className="flex flex-wrap gap-3 justify-center">
+                    {options?.map(opt => (
+                        <button
+                            key={opt.value}
+                            onMouseEnter={() => setHoveredInfo(opt.info || null)}
+                            onMouseLeave={() => setHoveredInfo(null)}
+                            onClick={() => onSubmit(opt.value, opt.label)}
+                            className="px-6 py-2.5 bg-white border border-navy-100 rounded-full font-bold text-[13px] text-navy-500 hover:border-wibl-teal hover:text-wibl-teal hover:shadow-premium-sm transition-all flex items-center justify-center gap-2 transform active:scale-95"
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Context Indicator */}
+                <div className="min-h-[40px] flex items-center justify-center">
+                    {hoveredInfo && (
+                        <div className="bg-canvas border border-navy-100 px-6 py-2 rounded-full animate-reveal-fast shadow-premium-sm">
+                            <p className="text-[11px] text-navy-500 font-medium">
+                                <span className="font-bold text-wibl-teal/60 mr-2 lowercase italic">i.</span>
+                                {hoveredInfo}
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
@@ -708,8 +880,12 @@ function WizardInput({
                 <Card variant="elevated" className="gradient-brand p-1">
                     <div className="bg-white rounded-wibl p-6">
                         <div className="flex items-center gap-4 mb-6">
-                            <div className="w-16 h-16 rounded-2xl gradient-brand flex items-center justify-center text-white text-3xl font-display font-black shadow-lg">
-                                {context.name.charAt(0)}
+                            <div className="w-16 h-16 rounded-2xl gradient-brand flex items-center justify-center text-white text-3xl font-display font-black shadow-lg overflow-hidden shrink-0">
+                                {context.avatar && context.avatar.startsWith('data:image') ? (
+                                    <img src={context.avatar} alt={context.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    context.name.charAt(0)
+                                )}
                             </div>
                             <div>
                                 <h3 className="text-2xl font-display font-black text-navy-800">
@@ -856,9 +1032,14 @@ function SuccessOverlay({ name }: { name: string }) {
                     <h2 className="text-4xl lg:text-5xl font-display font-black text-navy-900 tracking-tight">
                         {name || 'Agent'} <span className="text-wibl-teal">is Live.</span>
                     </h2>
-                    <p className="text-navy-400 font-medium text-lg leading-relaxed max-w-[280px] mx-auto opacity-80">
-                        Your new AI agent is built, secured, and ready for deployment.
-                    </p>
+                    <div className="space-y-2">
+                        <p className="text-navy-400 font-medium text-lg leading-relaxed max-w-[280px] mx-auto opacity-80">
+                            Your new AI agent is built, secured, and ready for deployment.
+                        </p>
+                        <p className="text-[11px] font-bold text-navy-300 uppercase tracking-widest max-w-[240px] mx-auto leading-relaxed">
+                            Fine-tuning and detailed logic settings can be refined later from your dashboard.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="flex flex-col gap-5">

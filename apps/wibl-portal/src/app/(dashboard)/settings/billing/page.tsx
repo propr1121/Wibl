@@ -5,8 +5,9 @@ import { Button, Card, Badge, LoadingDots, GradientBorder } from '@/components/u
 import { PricingCard } from '@/components/features/PricingCard';
 import { PLANS, PlanKey } from '@/lib/stripe/plans';
 import { createClient } from '@/lib/supabase/client';
-import { ExternalLink, Zap, Users, Wrench, TrendingUp } from 'lucide-react';
+import { ExternalLink, Zap, Users, Wrench, TrendingUp, Activity, Database, Shield } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
+import { useHeaderConfig } from '@/components/layouts/DashboardContext';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -30,6 +31,11 @@ export default function BillingPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null);
     const supabase = createClient();
+
+    useHeaderConfig({
+        title: 'Billing & Subscription',
+        breadcrumbs: [{ label: 'Settings', href: '/settings' }],
+    });
 
     useEffect(() => {
         loadBillingData();
@@ -124,16 +130,11 @@ export default function BillingPage() {
     const currentPlanKey = subscription?.plan_name || 'starter';
 
     return (
-        <div className="max-w-7xl mx-auto p-8 space-y-10">
-            {/* Page Header */}
-            <div>
-                <h1 className="text-4xl font-display font-black text-navy-700 mb-2">
-                    Billing & Subscription
-                </h1>
-                <p className="text-navy-400 font-medium">
-                    Manage your plan, usage, and billing information
-                </p>
-            </div>
+        <div className="space-y-10 pb-20 max-w-[1200px] mx-auto animate-reveal">
+            {/* Background Decor */}
+            <div className="absolute top-[-5%] right-[-5%] w-[400px] h-[400px] bg-wibl-teal/5 rounded-full blur-[100px] pointer-events-none" />
+
+            {/* Current Plan Overview - Premium Architecture */}
 
             {/* Current Plan Card */}
             <GradientBorder animated width={2}>
@@ -176,32 +177,30 @@ export default function BillingPage() {
                 </Card>
             </GradientBorder>
 
-            {/* Usage Meters */}
-            <div>
-                <h2 className="text-2xl font-display font-black text-navy-700 mb-6">
-                    Current Usage
-                </h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                    <UsageMeter
-                        icon={<Users className="text-wibl-teal" />}
-                        label="AI Agents"
-                        current={usage.agents}
-                        limit={currentPlan.agents}
-                    />
-                    <UsageMeter
-                        icon={<Wrench className="text-wibl-teal" />}
-                        label="Tool Integrations"
-                        current={usage.tools}
-                        limit={currentPlan.tools}
-                    />
-                    <UsageMeter
-                        icon={<TrendingUp className="text-wibl-teal" />}
-                        label="Messages This Month"
-                        current={usage.messages}
-                        limit={10000}
-                        hideProgress
-                    />
-                </div>
+            {/* Usage Metrics - High Density Informatics */}
+            <div className="grid lg:grid-cols-3 gap-8">
+                <UsageMeter
+                    icon={<Activity size={18} />}
+                    label="Active Agents"
+                    current={usage.agents}
+                    limit={currentPlan.agents}
+                    subtitle="Concurrent active instances"
+                />
+                <UsageMeter
+                    icon={<Database size={18} />}
+                    label="Connected systems"
+                    current={usage.tools}
+                    limit={currentPlan.tools}
+                    subtitle="External data Integrations"
+                />
+                <UsageMeter
+                    icon={<TrendingUp size={18} />}
+                    label="Total Volume"
+                    current={usage.messages}
+                    limit={10000}
+                    subtitle="Aggregate monthly chats"
+                    hideProgress
+                />
             </div>
 
             {/* Upgrade Options */}
@@ -252,51 +251,59 @@ export default function BillingPage() {
     );
 }
 
-// Usage Meter Component
+// Enhanced Usage Meter Component
 interface UsageMeterProps {
     icon: React.ReactNode;
     label: string;
     current: number;
     limit: number;
+    subtitle?: string;
     hideProgress?: boolean;
 }
 
-function UsageMeter({ icon, label, current, limit, hideProgress }: UsageMeterProps) {
+function UsageMeter({ icon, label, current, limit, subtitle, hideProgress }: UsageMeterProps) {
     const percentage = limit === Infinity ? 0 : Math.min((current / limit) * 100, 100);
-    const isNearLimit = percentage > 80;
+    const isNearLimit = percentage > 85;
 
     return (
-        <Card variant="elevated" padding="md" hoverable>
-            <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-wibl-sm bg-wibl-teal/10 flex items-center justify-center">
-                        {icon}
+        <Card variant="premium" padding="sm" className="bg-white border-navy-50 group hover:border-wibl-teal/20 transition-all duration-300">
+            <div className="space-y-5">
+                <div className="flex items-start justify-between">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <div className="text-wibl-teal group-hover:scale-110 transition-transform duration-500">{icon}</div>
+                            <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest leading-none">
+                                {label}
+                            </p>
+                        </div>
+                        {subtitle && <p className="text-[9px] font-bold text-navy-300 uppercase tracking-tight opacity-70">{subtitle}</p>}
                     </div>
-                    <div className="flex-1">
-                        <p className="text-sm font-black text-navy-500 uppercase tracking-wider">
-                            {label}
+                    <div className="text-right">
+                        <p className="text-2xl font-display font-black text-navy-900 leading-none tabular-nums tracking-tighter">
+                            {current.toLocaleString()}
                         </p>
-                        <p className="text-2xl font-display font-black text-navy-700">
-                            {current}
-                            {limit !== Infinity && (
-                                <span className="text-sm text-navy-400 font-medium"> / {limit}</span>
-                            )}
-                        </p>
+                        {limit !== Infinity && (
+                            <p className="text-[10px] font-bold text-navy-300 uppercase mt-1">
+                                of {limit.toLocaleString()}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 {!hideProgress && limit !== Infinity && (
                     <div className="space-y-2">
-                        <div className="h-2 bg-navy-50 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-navy-50/50 rounded-full overflow-hidden p-[1px]">
                             <div
-                                className={`h-full rounded-full transition-all duration-500 ${isNearLimit ? 'bg-coral' : 'gradient-brand'
-                                    }`}
+                                className={cn(
+                                    "h-full rounded-full transition-all duration-1000 ease-out",
+                                    isNearLimit ? 'bg-coral' : 'gradient-brand'
+                                )}
                                 style={{ width: `${percentage}%` }}
                             />
                         </div>
                         {isNearLimit && (
-                            <p className="text-xs text-coral font-bold">
-                                ⚠️ Approaching limit
+                            <p className="text-[9px] text-coral font-black uppercase tracking-widest animate-pulse">
+                                Critical Capacity
                             </p>
                         )}
                     </div>

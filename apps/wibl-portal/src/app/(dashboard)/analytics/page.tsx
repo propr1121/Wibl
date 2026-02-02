@@ -11,14 +11,17 @@ import { TrendingUp, Users, Zap, Clock } from 'lucide-react';
 
 export default function AnalyticsPage() {
     useHeaderConfig({
-        title: 'Analytics',
-        breadcrumbs: [{ label: 'Dashboard', href: '/dashboard' }],
+        title: 'Intelligence Analytics',
+        breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Analytics', href: '/analytics' }],
     });
 
     return (
-        <div className="space-y-8 pb-12">
-            {/* Summary Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="space-y-10 pb-20 max-w-[1400px] mx-auto relative animate-reveal">
+            {/* Background Orbs */}
+            <div className="absolute top-[-10%] left-[-5%] w-[400px] h-[400px] bg-wibl-teal/5 rounded-full blur-[100px] pointer-events-none" />
+
+            {/* Metrics Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <SummaryCard
                     icon={<Users className="text-wibl-teal" />}
                     label="Avg Conversations"
@@ -60,23 +63,23 @@ export default function AnalyticsPage() {
 function SummaryCard({ icon, label, value, change, isInverse = false }: any) {
     const isPositive = change.includes('+');
     const colorClass = isInverse
-        ? (isPositive ? 'text-coral' : 'text-wibl-teal')
-        : (isPositive ? 'text-wibl-teal' : 'text-coral');
+        ? (isPositive ? 'text-coral' : 'text-wibl-mint')
+        : (isPositive ? 'text-wibl-mint' : 'text-coral');
 
     return (
-        <Card variant="elevated" padding="md" hoverable>
-            <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-wibl-sm bg-gradient-subtle flex items-center justify-center shrink-0">
-                    {icon}
+        <Card variant="premium" padding="sm" className="bg-white/60 border-navy-50/50 group hover:border-wibl-teal/20 transition-all duration-300">
+            <div className="space-y-4">
+                <div className="flex items-start justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-navy-50 flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-500">
+                        <div className="text-navy-400 group-hover:text-wibl-teal transition-colors">{icon}</div>
+                    </div>
+                    <div className={cn("px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest bg-navy-50/50", colorClass)}>
+                        {change}
+                    </div>
                 </div>
                 <div>
-                    <p className="text-sm font-black text-navy-400 uppercase tracking-wider">{label}</p>
-                    <div className="flex items-baseline gap-2">
-                        <h4 className="text-2xl font-display font-black text-navy-700">{value}</h4>
-                        <span className={cn("text-xs font-black", colorClass)}>
-                            {change}
-                        </span>
-                    </div>
+                    <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest mb-1">{label}</p>
+                    <h4 className="text-3xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">{value}</h4>
                 </div>
             </div>
         </Card>

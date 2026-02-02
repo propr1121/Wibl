@@ -8,14 +8,16 @@ import {
     Link as LinkIcon,
     Type,
     HelpCircle,
-    MoreVertical,
-    Filter,
-    Clock,
     CheckCircle2,
     AlertCircle,
     Loader2,
     Database,
-    File
+    File,
+    Zap,
+    Cpu,
+    BookOpen,
+    MoreVertical,
+    Filter
 } from 'lucide-react';
 import { Button, Card, Badge, Input, Modal, Avatar } from '@/components/ui';
 import { useHeaderConfig } from '@/components/layouts/DashboardContext';
@@ -67,8 +69,8 @@ export default function KnowledgePage() {
     const [selectedItem, setSelectedItem] = useState<KnowledgeItem | null>(null);
 
     useHeaderConfig({
-        title: 'Knowledge Base',
-        breadcrumbs: [{ label: 'Knowledge', href: '/knowledge' }],
+        title: 'Library',
+        breadcrumbs: [{ label: 'Overview', href: '/dashboard' }, { label: 'Library', href: '/knowledge' }],
     });
 
     const filteredItems = items.filter(item => {
@@ -94,25 +96,24 @@ export default function KnowledgePage() {
     };
 
     return (
-        <div className="space-y-8 pb-20">
+        <div className="space-y-10 pb-20 max-w-[1400px] mx-auto animate-reveal relative">
+            {/* Background Orbs */}
+            <div className="absolute top-[-5%] right-[-5%] w-[400px] h-[400px] bg-wibl-mint/5 rounded-full blur-[100px] pointer-events-none" />
+
             {/* Header / Intro */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div className="animate-fade-in">
-                    <h1 className="text-4xl font-display font-black text-navy-700 mb-2">
-                        Library
-                    </h1>
-                    <p className="text-navy-500 font-medium text-lg">
-                        Manage the data your agents use to learn
-                    </p>
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-navy-400 uppercase tracking-[0.3em]">Intelligence Repository</p>
+                    <h2 className="text-3xl font-display font-black text-navy-900 tracking-tighter">Your Library</h2>
                 </div>
                 <Button
-                    variant="coral"
+                    variant="primary"
                     size="lg"
                     leftIcon={<Plus size={20} />}
                     onClick={() => setIsUploadModalOpen(true)}
-                    className="shadow-wibl-coral"
+                    className="shadow-glow px-8"
                 >
-                    Add Knowledge
+                    Add Intelligence Asset
                 </Button>
             </div>
 
@@ -167,12 +168,11 @@ export default function KnowledgePage() {
             {filteredItems.length === 0 ? (
                 <EmptyState onAction={() => setIsUploadModalOpen(true)} />
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                    {filteredItems.map((item, idx) => (
-                        <KnowledgeCard
+                <div className="grid grid-cols-1 gap-6 animate-fade-in">
+                    {filteredItems.map((item) => (
+                        <KnowledgeItemRow
                             key={item.id}
                             item={item}
-                            delay={idx * 50}
                             onAssign={() => {
                                 setSelectedItem(item);
                                 setIsAssignModalOpen(true);
@@ -250,107 +250,85 @@ export default function KnowledgePage() {
 
 // --- Sub-components ---
 
-function KnowledgeCard({
-    item,
-    delay,
-    onAssign,
-    onEdit
-}: {
-    item: KnowledgeItem,
-    delay: number,
-    onAssign: () => void,
-    onEdit: () => void
-}) {
-    const icons = {
-        document: <FileText className="text-navy-400" size={24} />,
-        url: <LinkIcon className="text-wibl-teal" size={24} />,
-        text: <Type className="text-wibl-sky" size={24} />,
-        qa_pair: <HelpCircle className="text-wibl-coral" size={24} />,
-        all: <Database size={24} />
-    };
-
-    const statusConfig = {
-        ready: { variant: 'teal' as const, icon: <CheckCircle2 size={12} />, label: 'Ready' },
-        processing: { variant: 'info' as const, icon: <Loader2 size={12} className="animate-spin" />, label: 'Processing' },
-        pending: { variant: 'warning' as const, icon: <Clock size={12} />, label: 'Pending' },
-        failed: { variant: 'error' as const, icon: <AlertCircle size={12} />, label: 'Failed' },
-        all: { variant: 'info' as const, icon: null, label: '' }
-    };
+// Enhanced Knowledge Item Component
+function KnowledgeItemRow({ item, onEdit, onAssign }: { item: KnowledgeItem, onEdit: () => void, onAssign: () => void }) {
+    const Icon = item.type === 'document' ? FileText : item.type === 'url' ? LinkIcon : item.type === 'text' ? Type : HelpCircle;
 
     return (
         <Card
+            variant="elevated"
+            padding="none"
             hoverable
-            className="group animate-slide-up relative overflow-hidden flex flex-col h-full bg-white border-navy-50 hover:shadow-xl transition-all"
-            style={{ animationDelay: `${delay}ms` }}
+            className="group overflow-hidden border-navy-50/50 bg-white/60 backdrop-blur-sm transition-all duration-300"
         >
-            {/* Status gradient indicator */}
-            <div className={cn(
-                "absolute top-0 left-0 w-1.5 h-full",
-                item.status === 'ready' ? "bg-wibl-teal" :
-                    item.status === 'processing' ? "bg-wibl-sky" :
-                        item.status === 'failed' ? "bg-wibl-coral" : "bg-navy-200"
-            )} />
+            <div className="flex flex-col md:flex-row md:items-center p-6 sm:p-8 gap-6 sm:gap-10">
+                {/* Type Icon */}
+                <div className="w-16 h-16 rounded-[20px] bg-navy-50 flex items-center justify-center shrink-0 border border-navy-100 group-hover:border-wibl-teal/30 transition-all duration-500">
+                    <Icon className="text-navy-400 group-hover:text-wibl-teal transition-colors" size={24} />
+                </div>
 
-            <div className="p-6 flex-1 space-y-4">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-navy-50 flex items-center justify-center shrink-0 group-hover:bg-white group-hover:shadow-inner transition-all">
-                        {icons[item.type]}
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-display font-black text-navy-900 tracking-tighter truncate max-w-sm">
+                            {item.title}
+                        </h3>
                         <Badge
-                            variant={statusConfig[item.status].variant}
+                            variant={item.status === 'ready' ? 'teal' : item.status === 'failed' ? 'error' : 'warning'}
                             size="sm"
-                            className="flex items-center gap-1.5"
+                            className="font-black uppercase tracking-widest text-[9px]"
                         >
-                            {statusConfig[item.status].icon}
-                            {statusConfig[item.status].label}
+                            {item.status}
                         </Badge>
-                        <span className="text-[10px] font-black text-navy-300 uppercase tracking-widest">{item.createdAt}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest bg-navy-50 px-2 py-0.5 rounded-md">
+                            {item.type.replace('_', ' ')}
+                        </p>
+                        <span className="w-1 h-1 rounded-full bg-navy-200" />
+                        <p className="text-[10px] font-bold text-navy-300 uppercase tracking-tight">Source ID: {item.id.padStart(4, '0')}</p>
                     </div>
                 </div>
 
-                <div className="space-y-1">
-                    <h3 className="text-xl font-display font-black text-navy-800 line-clamp-2 leading-tight group-hover:text-wibl-teal transition-colors">
-                        {item.title}
-                    </h3>
-                    <p className="text-xs font-black text-navy-400 uppercase tracking-widest">{item.type.replace('_', ' ')}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-navy-50">
-                    <div>
-                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mb-0.5">Complexity</p>
-                        <p className="font-display font-black text-navy-700">{item.status === 'ready' ? (item.tokens > 1000 ? (item.tokens / 1000).toFixed(1) + 'k' : item.tokens) : '--'}</p>
+                {/* Stats */}
+                <div className="px-10 flex items-center gap-12 border-y md:border-y-0 md:border-x border-navy-50/50 h-12">
+                    <div className="text-center min-w-[80px]">
+                        <p className="text-xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">
+                            {(item.tokens / 1000).toFixed(1)}k
+                        </p>
+                        <p className="text-[9px] font-black text-navy-400 uppercase tracking-widest mt-1">Tokens</p>
                     </div>
-                    <div>
-                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mb-0.5">Sections</p>
-                        <p className="font-display font-black text-navy-700">{item.status === 'ready' ? item.chunks : '--'}</p>
+                    <div className="text-center min-w-[80px] hidden sm:block">
+                        <p className="text-xl font-display font-black text-navy-900 tabular-nums tracking-tighter leading-none">
+                            {item.chunks}
+                        </p>
+                        <p className="text-[9px] font-black text-navy-400 uppercase tracking-widest mt-1">Fragments</p>
                     </div>
                 </div>
-            </div>
 
-            <div className="px-6 py-4 bg-navy-50/50 flex items-center justify-between border-t border-navy-50">
-                <div className="flex items-center gap-2">
+                {/* Actions */}
+                <div className="flex items-center justify-between md:justify-end gap-6 min-w-[200px]">
                     {item.agent ? (
-                        <div className="flex items-center gap-1.5">
-                            <Badge variant="info" size="sm" className="rounded-full">
-                                {item.agent}
-                            </Badge>
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center text-white text-xs font-black">
+                                {item.agent[0]}
+                            </div>
+                            <span className="text-[11px] font-black text-navy-800 uppercase tracking-tighter">{item.agent}</span>
                         </div>
                     ) : (
-                        <span className="text-[10px] font-bold text-navy-400 italic">Unassigned</span>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onAssign}
+                            className="text-[10px] font-black uppercase tracking-widest hover:text-wibl-teal"
+                        >
+                            Deploy to Agent
+                        </Button>
                     )}
-                </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={onAssign}
-                        className="p-2 text-navy-400 hover:text-wibl-teal transition-colors hover:bg-white rounded-lg shadow-sm"
-                        title="Assign to agent"
-                    >
-                        <Plus size={16} />
-                    </button>
-                    <button className="p-2 text-navy-400 hover:text-coral transition-colors hover:bg-white rounded-lg shadow-sm">
-                        <MoreVertical size={16} />
-                    </button>
+
+                    <Button variant="ghost" size="md" className="p-2" onClick={onEdit}>
+                        <MoreVertical size={20} className="text-navy-300 hover:text-navy-900" />
+                    </Button>
                 </div>
             </div>
         </Card>

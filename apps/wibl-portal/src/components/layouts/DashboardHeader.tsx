@@ -89,8 +89,8 @@ export function DashboardHeader({
     };
 
     return (
-        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-navy-100 transition-shadow">
-            <div className="px-6 py-4">
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-navy-100 h-16 flex items-center shrink-0 transition-shadow">
+            <div className="px-6 lg:px-8 w-full">
                 <div className="flex items-center justify-between gap-4">
                     {/* Left: Mobile menu + Breadcrumbs + Title */}
                     <div className="flex items-center gap-4 min-w-0 flex-1">

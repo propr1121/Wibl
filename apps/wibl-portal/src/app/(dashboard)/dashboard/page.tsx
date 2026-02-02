@@ -17,7 +17,8 @@ import {
     ShieldCheck,
     ChevronRight,
     ArrowUpRight,
-    Info
+    Info,
+    Cpu
 } from 'lucide-react';
 import { useHeaderConfig } from '@/components/layouts/DashboardContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -57,6 +58,16 @@ const MOCK_AGENTS = [
     },
 ];
 
+const CHART_DATA = [
+    { x: 0, y: 300, value: 42, day: 'Mon' },
+    { x: 166, y: 320, value: 38, day: 'Tue' },
+    { x: 333, y: 220, value: 55, day: 'Wed' },
+    { x: 500, y: 260, value: 48, day: 'Thu' },
+    { x: 666, y: 140, value: 72, day: 'Fri', isPeak: true },
+    { x: 833, y: 200, value: 64, day: 'Sat' },
+    { x: 1000, y: 180, value: 59, day: 'Sun' }
+];
+
 const USAGE = {
     agents: { used: 2, limit: 10 },
     conversations: { used: 1240, limit: 5000 },
@@ -65,6 +76,8 @@ const USAGE = {
 
 export default function DashboardPage() {
     const [mounted, setMounted] = useState(false);
+    const [hoveredPoint, setHoveredPoint] = useState<typeof CHART_DATA[0] | null>(null);
+    const chartContainerRef = useRef<HTMLDivElement>(null);
 
     useHeaderConfig({
         title: 'Overview',
@@ -85,20 +98,29 @@ export default function DashboardPage() {
     if (!mounted) return null;
 
     return (
-        <div className="space-y-8 pb-20 max-w-7xl mx-auto">
-            {/* Top Section: Greeting & Quick Actions */}
-            <div className="flex flex-col md:flex-row justify-between items-start gap-6 animate-reveal">
-                <div>
-                    <h1 className="text-4xl font-display font-black text-navy-800 mb-2 tracking-tight">
-                        {getGreeting()}, {MOCK_USER.name}<span className="text-wibl-teal">.</span>
+        <div className="space-y-10 pb-20 max-w-[1600px] mx-auto relative overflow-hidden">
+            {/* Background Orbs for Premium feel */}
+            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-wibl-teal/5 rounded-full blur-[120px] pointer-events-none orb-animated" />
+            <div className="absolute bottom-[20%] left-[-5%] w-[400px] h-[400px] bg-wibl-mint/5 rounded-full blur-[100px] pointer-events-none orb-animated-slow" />
+
+            {/* Top Section: Simplified Header (Clean & Focused) */}
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 animate-reveal">
+                <div className="space-y-1">
+                    <h1 className="text-4xl lg:text-5xl font-display font-black text-navy-900 tracking-tighter">
+                        {getGreeting()}, <span className="text-gradient">John.</span>
                     </h1>
-                    <p className="text-navy-500 font-bold text-lg opacity-70">
-                        Everything is running smoothly. Your agents have handled <span className="text-navy-800">47 chats</span> today.
+                    <p className="text-navy-400 font-medium text-lg max-w-xl">
+                        Your AI workforce is active. Agents have managed <span className="text-navy-900 font-black underline decoration-wibl-teal/30">47 chats</span> today.
                     </p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex items-center gap-4 shrink-0">
                     <Link href="/agents/new">
-                        <Button variant="primary" size="lg" leftIcon={<Plus size={20} />} className="shadow-premium-lg">
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            className="shadow-glow px-8"
+                            leftIcon={<Plus size={20} />}
+                        >
                             Create New Agent
                         </Button>
                     </Link>
@@ -106,121 +128,194 @@ export default function DashboardPage() {
             </div>
 
             {/* Premium Stats Grid */}
-            <div className="grid lg:grid-cols-3 gap-6">
-                {/* Main Trend Chart - Takes 2 columns */}
-                <Card variant="elevated" padding="none" className="lg:col-span-2 overflow-hidden animate-reveal delay-100">
-                    <div className="p-6 border-b border-navy-50 flex justify-between items-center">
-                        <div>
-                            <h3 className="font-display font-black text-navy-700">Conversation Impact</h3>
-                            <p className="text-xs font-bold text-navy-400 uppercase tracking-widest">Last 7 Days</p>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-stretch pt-2">
+                {/* Visual Chart - 2/3 width */}
+                <Card
+                    variant="glass"
+                    padding="none"
+                    className="xl:col-span-2 overflow-hidden border-navy-50/50 flex flex-col animate-reveal delay-100 group/chart"
+                >
+                    <div className="p-6 sm:p-8 border-b border-navy-50/50 flex flex-col sm:flex-row sm:items-center justify-between bg-white/40 overflow-hidden relative gap-4">
+                        <div className="relative z-10">
+                            <h3 className="text-xl font-display font-black text-navy-900 tracking-tighter">Conversation Impact</h3>
+                            <div className="flex items-center gap-3 mt-1">
+                                <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest">Last 7 Days</p>
+                                <span className="w-1 h-1 rounded-full bg-navy-100" />
+                                <div className="flex items-center gap-1">
+                                    <Sparkles size={10} className="text-wibl-teal" />
+                                    <p className="text-[10px] font-black text-wibl-teal uppercase tracking-widest">Peak: 72 Chats</p>
+                                </div>
+                            </div>
                         </div>
-                        <Badge variant="teal" size="sm" className="flex items-center gap-1">
-                            <TrendingUp size={12} /> +12% vs last week
-                        </Badge>
+                        <div className="flex items-center gap-3 relative z-10 shrink-0">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-wibl-mint/10 rounded-full border border-wibl-mint/20">
+                                <TrendingUp size={14} className="text-wibl-mint" />
+                                <span className="text-[10px] font-black text-wibl-mint uppercase tracking-widest">+12.4%</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="h-[240px] w-full p-4">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={MOCK_STATS_CHART} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <div className="flex-1 p-8 bg-gradient-to-b from-white/40 to-transparent flex flex-col justify-center relative">
+                        <div
+                            ref={chartContainerRef}
+                            className="relative h-72 w-full mt-4 cursor-crosshair"
+                            onMouseMove={(e) => {
+                                if (!chartContainerRef.current) return;
+                                const rect = chartContainerRef.current.getBoundingClientRect();
+                                const x = ((e.clientX - rect.left) / rect.width) * 1000;
+
+                                // Find nearest point
+                                const closest = CHART_DATA.reduce((prev, curr) =>
+                                    Math.abs(curr.x - x) < Math.abs(prev.x - x) ? curr : prev
+                                );
+                                setHoveredPoint(closest);
+                            }}
+                            onMouseLeave={() => setHoveredPoint(null)}
+                        >
+                            {/* Interactive Guide Layer (Vertical Line) */}
+                            {hoveredPoint && (
+                                <div
+                                    className="absolute top-0 bottom-0 w-[1px] bg-wibl-teal/20 z-10 transition-all duration-300 pointer-events-none"
+                                    style={{ left: `${(hoveredPoint.x / 1000) * 100}%` }}
+                                >
+                                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-wibl-teal blur-[4px]" />
+                                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-wibl-teal blur-[4px]" />
+                                </div>
+                            )}
+
+                            {/* Mock Chart Visualization with Expanded ViewBox */}
+                            <svg className="w-full h-full overflow-visible pointer-events-none" viewBox="0 0 1000 400" preserveAspectRatio="none">
                                 <defs>
-                                    <linearGradient id="colorConvo" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor={chartColors.primary} stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor={chartColors.primary} stopOpacity={0} />
+                                    <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="var(--wibl-teal)" stopOpacity="0.1" />
+                                        <stop offset="100%" stopColor="var(--wibl-teal)" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                                <XAxis
-                                    dataKey="date"
-                                    stroke="#94A3B8"
-                                    fontSize={10}
-                                    fontWeight="bold"
-                                    tickLine={false}
-                                    axisLine={false}
+
+                                <path
+                                    d="M0,300 Q83,310 166,320 T333,220 T500,260 T666,140 T833,200 T1000,180"
+                                    fill="none"
+                                    stroke="var(--wibl-teal)"
+                                    strokeWidth="6"
+                                    strokeLinecap="round"
+                                    className="chart-path-draw"
                                 />
-                                <YAxis
-                                    stroke="#94A3B8"
-                                    fontSize={10}
-                                    fontWeight="bold"
-                                    tickLine={false}
-                                    axisLine={false}
+                                <path
+                                    d="M0,300 Q83,310 166,320 T333,220 T500,260 T666,140 T833,200 T1000,180 V400 H0 Z"
+                                    fill="url(#chart-gradient)"
                                 />
-                                <Tooltip
-                                    content={({ active, payload }) => {
-                                        if (active && payload && payload.length) {
-                                            return (
-                                                <div className="bg-navy-900 text-white rounded-xl py-2 px-3 shadow-xl border border-white/10">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">{payload[0].payload.date}</p>
-                                                    <p className="text-lg font-display font-black leading-none">{payload[0].value} <span className="text-xs opacity-60">Chats</span></p>
-                                                </div>
-                                            );
-                                        }
-                                        return null;
+
+                                {/* Data Points - Focal Highlights */}
+                                {CHART_DATA.map((pt, i) => (
+                                    <g key={i}>
+                                        {hoveredPoint?.day === pt.day && (
+                                            <circle
+                                                cx={pt.x}
+                                                cy={pt.y}
+                                                r="15"
+                                                fill="var(--wibl-teal)"
+                                                className="opacity-20 animate-pulse"
+                                            />
+                                        )}
+                                        <circle
+                                            cx={pt.x}
+                                            cy={pt.y}
+                                            r={hoveredPoint?.day === pt.day ? "8" : "5"}
+                                            fill="white"
+                                            stroke="var(--wibl-teal)"
+                                            strokeWidth="4"
+                                            className="transition-all duration-300 shadow-premium"
+                                        />
+                                    </g>
+                                ))}
+                            </svg>
+
+                            {/* Solid Interactive Tooltip (POSITIONED ABOVE DOT) */}
+                            {hoveredPoint && (
+                                <div
+                                    className="absolute p-4 bg-navy-900 border border-white/20 shadow-2xl rounded-[20px] animate-reveal z-50 pointer-events-none transition-all duration-100 ease-out"
+                                    style={{
+                                        left: `${(hoveredPoint.x / 1000) * 100}%`,
+                                        top: `${(hoveredPoint.y / 400) * 100}%`,
+                                        transform: 'translate(-50%, calc(-100% - 24px))'
                                     }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="conversations"
-                                    stroke={chartColors.primary}
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorConvo)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                                >
+                                    <div className="relative z-10 min-w-[100px]">
+                                        <div className="flex items-center justify-between mb-1.5">
+                                            <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">{hoveredPoint.day} Metric</p>
+                                        </div>
+                                        <div className="flex items-baseline gap-1.5">
+                                            <span className="text-2xl font-display font-black text-white tabular-nums tracking-tighter">
+                                                {hoveredPoint.value}
+                                            </span>
+                                            <span className="text-[10px] text-wibl-teal font-black uppercase tracking-widest">Chats</span>
+                                        </div>
+                                    </div>
+                                    {/* Link Connector Arrow pointing DOWN */}
+                                    <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-navy-900 border-r border-b border-white/20 rotate-45" />
+                                </div>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-7 gap-4 mt-8 pt-8 border-t border-navy-50/50">
+                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                                <div key={day} className="text-center">
+                                    <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest">{day}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </Card>
 
-                {/* Plan Usage Card */}
-                <Card variant="elevated" className="animate-reveal delay-200 bg-navy-900 border-navy-800 text-white overflow-hidden relative group">
-                    <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-wibl-teal opacity-10 blur-[80px] rounded-full group-hover:opacity-20 transition-opacity duration-1000" />
-
-                    <div className="relative z-10 h-full flex flex-col">
-                        <h3 className="text-lg font-display font-black mb-6 flex items-center justify-between">
-                            Plan Capacity
-                            <Badge variant="gradient" size="sm">{MOCK_USER.plan}</Badge>
-                        </h3>
-
-                        <div className="space-y-6 flex-1">
-                            <UsageItem
-                                label="Active Agents"
-                                used={USAGE.agents.used}
-                                limit={USAGE.agents.limit}
-                                unit="agents"
-                            />
-                            <UsageItem
-                                label="Conversations"
-                                used={USAGE.conversations.used}
-                                limit={USAGE.conversations.limit}
-                                unit="this month"
-                            />
-                            <UsageItem
-                                label="Memory Used"
-                                used={USAGE.storage.used}
-                                limit={USAGE.storage.limit}
-                                unit="MB"
-                            />
+                {/* Workforce Health Card - User Friendly usage */}
+                <Card variant="glass-dark" padding="none" className="relative overflow-hidden group animate-reveal delay-200 border-white/5 flex flex-col h-full bg-[#1A1F2E]">
+                    <div className="relative z-10 h-full flex flex-col p-6 sm:p-8">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-10">
+                            <div className="space-y-1">
+                                <h3 className="text-xl font-display font-black tracking-tighter text-white">Workforce Health</h3>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-wibl-mint animate-pulse" />
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-wibl-mint">Live Monitoring</p>
+                                </div>
+                            </div>
+                            <div className="inline-flex px-2 py-0.5 bg-white/10 rounded-md border border-white/5 backdrop-blur-sm self-start sm:self-auto">
+                                <span className="text-[8px] font-black text-white/80 uppercase tracking-widest">PRO PLAN</span>
+                            </div>
                         </div>
 
-                        <Link href="/settings/billing" className="mt-8">
-                            <Button variant="ghost" className="w-full bg-white/5 hover:bg-white/10 border-white/5 text-xs font-black uppercase tracking-widest py-4">
-                                Upgrade Plan <ArrowUpRight size={14} className="ml-2" />
-                            </Button>
-                        </Link>
+                        <div className="space-y-7 flex-1">
+                            <UsageItem label="Active Agents" used={USAGE.agents.used} limit={USAGE.agents.limit} unit="Deployed" />
+                            <UsageItem label="Chat Volume" used={USAGE.conversations.used} limit={USAGE.conversations.limit} unit="Chats" subtitle="Monthly utilization" />
+                            <UsageItem label="Library Memory" used={USAGE.storage.used} limit={USAGE.storage.limit} unit="MB" />
+                        </div>
+
+                        <div className="mt-10">
+                            <Link href="/settings/billing">
+                                <Button className="w-full bg-white text-navy-900 hover:bg-white/90 hover:scale-[1.02] active:scale-[0.98] text-[10px] font-black uppercase tracking-[0.2em] py-6 shadow-2xl transition-all duration-300 group">
+                                    Plan & Billing <ArrowUpRight size={14} className="ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 </Card>
             </div>
 
             {/* Recommendations & Active Agents */}
-            <div className="grid lg:grid-cols-3 gap-8">
+            <div className="grid lg:grid-cols-3 gap-12 pt-4">
                 {/* Recommendations - Strategic Prompting */}
-                <div className="space-y-4 animate-reveal delay-300">
-                    <p className="text-xs font-black text-navy-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                        <Sparkles size={14} className="text-wibl-teal" /> Recommended Settings
-                    </p>
+                <div className="lg:col-span-1 space-y-6 animate-reveal delay-300">
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-8 h-8 rounded-lg gradient-brand flex items-center justify-center text-white shadow-wibl">
+                                <Sparkles size={16} />
+                            </div>
+                            <h3 className="text-lg font-display font-black text-navy-900 tracking-tight">Strategic Insights</h3>
+                        </div>
+                        <p className="text-[10px] font-bold text-navy-400 uppercase tracking-widest ml-1 opacity-70">AI-driven optimization recommendations</p>
+                    </div>
                     <div className="space-y-4">
                         <InsightCard
-                            title="Boost Accuracy"
-                            desc="Add 2 new library sources to Support Bot to reduce 'I don't know' responses."
-                            icon={<Brain size={20} />}
+                            title="Intelligence Bias"
+                            desc="Add 2 new structured datasets to Support Protocol to refine decision logic."
+                            icon={<Cpu size={20} />}
                             color="teal"
                             link="/knowledge"
                         />
@@ -242,15 +337,23 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Agents List - Taking more space */}
-                <div className="lg:col-span-2 space-y-4 animate-reveal delay-400">
-                    <p className="text-xs font-black text-navy-400 uppercase tracking-widest ml-1">Your AI Workforce</p>
+                <div className="lg:col-span-2 space-y-6 animate-reveal delay-400">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-display font-black text-navy-900 tracking-tight">Your AI Workforce</h3>
+                        <div className="px-3 py-1 bg-navy-50 rounded-full border border-navy-100 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-wibl-teal" />
+                            <span className="text-[10px] font-black text-navy-500 uppercase tracking-widest">{MOCK_AGENTS.length} Agents Live</span>
+                        </div>
+                    </div>
                     <div className="space-y-4">
-                        {MOCK_AGENTS.map((agent) => (
-                            <AgentCard key={agent.id} agent={agent} />
+                        {MOCK_AGENTS.map((agent, i) => (
+                            <div key={agent.id} className="animate-reveal" style={{ animationDelay: `${500 + (i * 100)}ms` }}>
+                                <AgentCard agent={agent} />
+                            </div>
                         ))}
 
-                        <Link href="/agents" className="block p-4 border-2 border-dashed border-navy-100 rounded-3xl text-center group hover:border-wibl-teal/50 hover:bg-wibl-teal/5 transition-all">
-                            <span className="text-sm font-black text-navy-400 group-hover:text-wibl-teal">View all agents</span>
+                        <Link href="/agents" className="block p-5 border-2 border-dashed border-navy-100 rounded-[28px] text-center group hover:border-wibl-teal/50 hover:bg-wibl-teal/5 transition-all duration-300">
+                            <span className="text-[13px] font-black text-navy-400 group-hover:text-wibl-teal uppercase tracking-widest">Manage Workforce Catalog</span>
                         </Link>
                     </div>
                 </div>
@@ -261,17 +364,25 @@ export default function DashboardPage() {
 
 // --- Sub-components ---
 
-function UsageItem({ label, used, limit, unit }: { label: string, used: number, limit: number, unit: string }) {
-    const percent = (used / limit) * 100;
+function UsageItem({ label, used, limit, unit, subtitle }: { label: string, used: number, limit: number, unit: string, subtitle?: string }) {
+    const percent = Math.min((used / limit) * 100, 100);
     return (
         <div className="space-y-2">
-            <div className="flex justify-between text-xs font-bold uppercase tracking-widest opacity-60">
-                <span>{label}</span>
-                <span>{used.toLocaleString()} / {limit.toLocaleString()} {unit}</span>
+            <div className="flex justify-between items-baseline gap-2">
+                <div className="flex flex-col min-w-0">
+                    <span className="text-[10px] font-black uppercase tracking-[0.1em] text-white/60 truncate">{label}</span>
+                    {subtitle && <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest mt-0.5 line-clamp-1">{subtitle}</span>}
+                </div>
+                <div className="text-right shrink-0">
+                    <p className="text-[11px] font-black text-white tabular-nums tracking-tighter leading-none">
+                        {used.toLocaleString()}
+                        <span className="opacity-30 text-[8px] font-bold uppercase ml-1">/ {limit.toLocaleString()} {unit}</span>
+                    </p>
+                </div>
             </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden p-[1px] relative">
                 <div
-                    className="h-full gradient-brand rounded-full transition-all duration-1000"
+                    className="h-full gradient-brand rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(0,242,234,0.4)]"
                     style={{ width: `${percent}%` }}
                 />
             </div>
@@ -281,24 +392,30 @@ function UsageItem({ label, used, limit, unit }: { label: string, used: number, 
 
 function InsightCard({ title, desc, icon, color, link }: { title: string, desc: string, icon: React.ReactNode, color: string, link: string }) {
     return (
-        <Link href={link}>
-            <Card variant="elevated" hoverable padding="sm" className="bg-white border-navy-50 group">
-                <div className="flex gap-4">
+        <Link href={link} className="block group">
+            <Card variant="elevated" padding="sm" className="bg-white border-navy-50/50 hover:border-wibl-teal/30 transition-all duration-500 overflow-hidden relative">
+                <div className="flex gap-4 relative z-10">
                     <div className={cn(
-                        "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
+                        "w-12 h-12 rounded-[18px] flex items-center justify-center shrink-0 transition-all duration-500 group-hover:scale-110 shadow-sm",
                         color === 'teal' ? "bg-wibl-teal/10 text-wibl-teal" :
                             color === 'mint' ? "bg-wibl-mint/10 text-wibl-mint" :
                                 "bg-coral/10 text-coral"
                     )}>
                         {icon}
                     </div>
-                    <div className="min-w-0 pr-2">
-                        <h4 className="text-sm font-display font-black text-navy-800 flex items-center gap-1 group-hover:text-wibl-teal transition-colors">
-                            {title} <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-1 transition-all" />
+                    <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-display font-black text-navy-900 flex items-center justify-between group-hover:text-wibl-teal transition-colors tracking-tight">
+                            {title}
+                            <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-500" />
                         </h4>
-                        <p className="text-xs text-navy-500 font-medium leading-relaxed">{desc}</p>
+                        <p className="text-[11px] text-navy-500 font-bold leading-relaxed line-clamp-2 mt-0.5">{desc}</p>
                     </div>
                 </div>
+                {/* Subtle background hit */}
+                <div className={cn(
+                    "absolute top-0 right-0 w-24 h-24 blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none",
+                    color === 'teal' ? "bg-wibl-teal" : color === 'mint' ? "bg-wibl-mint" : "bg-coral"
+                )} />
             </Card>
         </Link>
     );
@@ -306,28 +423,46 @@ function InsightCard({ title, desc, icon, color, link }: { title: string, desc: 
 
 function AgentCard({ agent }: { agent: any }) {
     return (
-        <Card variant="elevated" padding="md" hoverable className="border-navy-50 group animate-slide-up">
-            <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl gradient-brand flex items-center justify-center text-white font-display font-black text-xl group-hover:scale-105 transition-transform shadow-lg shrink-0">
-                    {agent.initial}
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="font-display font-black text-navy-700 truncate">{agent.name}</h3>
-                        <Badge variant="teal" size="sm">Active</Badge>
+        <Card variant="elevated" padding="none" hoverable className="border-navy-50/50 group animate-reveal overflow-hidden">
+            <div className="p-4 sm:p-5 flex items-center gap-4 sm:gap-6">
+                {/* Agent Brand Identifier */}
+                <div className="relative shrink-0">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-[22px] gradient-brand flex items-center justify-center text-white font-display font-black text-2xl group-hover:scale-105 transition-transform duration-500 shadow-premium-sm relative z-10">
+                        {agent.initial}
+                        <div className="absolute inset-0 bg-white/20 rounded-inherit opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
-                    <p className="text-xs text-navy-500 font-medium truncate">{agent.description}</p>
+                    {/* Status Glow */}
+                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm z-20">
+                        <div className="w-2.5 h-2.5 rounded-full bg-wibl-teal status-live" />
+                    </div>
                 </div>
-                <div className="text-right px-4 hidden sm:block">
-                    <p className="text-xl font-display font-black text-navy-800 leading-none">{agent.conversationsToday}</p>
-                    <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest mt-1">Today</p>
+
+                {/* Primary Intelligence Info */}
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-display font-black text-navy-900 truncate tracking-tight text-base sm:text-lg">{agent.name}</h3>
+                        <Badge variant="teal" size="sm" className="bg-wibl-teal/10 text-wibl-teal border-wibl-teal/20 font-black">ACTIVE</Badge>
+                    </div>
+                    <p className="text-xs text-navy-400 font-bold truncate tracking-tight uppercase opacity-70 leading-none">
+                        {agent.description}
+                    </p>
                 </div>
-                <div className="flex items-center gap-2">
+
+                {/* Performance Metrics Overlay */}
+                <div className="hidden md:flex flex-col items-end px-6 border-l border-navy-50">
+                    <p className="text-2xl font-display font-black text-navy-900 leading-none tabular-nums tracking-tighter">{agent.conversationsToday}</p>
+                    <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mt-1">Managed Today</p>
+                </div>
+
+                {/* Operational Controls */}
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                     <Link href={`/agents/${agent.id}`}>
-                        <Button variant="ghost" size="sm" leftIcon={<Eye size={16} />}>View</Button>
+                        <Button variant="ghost" size="sm" className="hidden sm:flex border-navy-100 text-navy-600 hover:bg-navy-900 hover:text-white hover:border-navy-900 font-black px-4" leftIcon={<Eye size={14} />}>
+                            Visualize
+                        </Button>
                     </Link>
-                    <Button variant="ghost" size="sm" className="w-10 h-10 p-0 rounded-xl bg-navy-50 hover:bg-navy-100">
-                        <Pause size={16} className="text-navy-400" />
+                    <Button variant="ghost" size="sm" className="w-10 h-10 sm:w-11 sm:h-11 p-0 rounded-2xl bg-navy-50 border-transparent hover:bg-coral/10 hover:text-coral transition-colors flex items-center justify-center">
+                        <Pause size={18} className="text-navy-400 group-hover:text-coral transition-colors" />
                     </Button>
                 </div>
             </div>

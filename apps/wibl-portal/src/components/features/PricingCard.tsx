@@ -37,92 +37,92 @@ export function PricingCard({
 
     const CardContent = () => (
         <div className={cn(
-            'relative p-8 rounded-wibl transition-all duration-300 h-full flex flex-col',
+            'relative p-8 rounded-[32px] transition-all duration-500 h-full flex flex-col group overflow-hidden',
             popular
-                ? 'bg-white shadow-wibl-lg'
-                : 'bg-canvas-subtle hover:bg-white hover:shadow-wibl border-2 border-navy-100 hover:border-wibl-teal/30',
-            'hover:scale-[1.02] active:scale-[0.98]',
+                ? 'bg-white shadow-2xl border border-wibl-teal/30 scale-[1.02] z-10'
+                : 'bg-white/50 border border-navy-100 hover:border-wibl-teal/20 hover:bg-white transition-colors shadow-sm',
             className
         )}>
+            {/* Background Hit for Popular */}
+            {popular && (
+                <div className="absolute top-0 right-0 w-32 h-32 bg-wibl-teal/10 blur-3xl opacity-50 group-hover:opacity-80 transition-opacity" />
+            )}
+
             {/* Popular badge */}
             {popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div className="inline-flex items-center gap-1.5 px-4 py-1.5 gradient-brand text-white text-xs font-black rounded-full shadow-wibl-lg">
-                        <Sparkles size={12} />
-                        MOST POPULAR
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <div className="inline-flex items-center gap-1.5 px-5 py-2 gradient-brand text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-glow">
+                        <Sparkles size={12} className="animate-pulse" />
+                        Most Popular
                     </div>
                 </div>
             )}
 
             {/* Plan name and limits */}
-            <div className="space-y-2 mb-6">
-                <h3 className="text-2xl font-display font-black text-navy-700">{name}</h3>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-xs text-navy-400 font-bold">Up to</span>
-                    <span className="text-sm text-wibl-teal font-black">
-                        {agents === Infinity ? '∞' : agents} {agents === 1 ? 'agent' : 'agents'}
+            <div className="space-y-1 mb-6">
+                <h3 className="text-2xl font-display font-black text-navy-900 tracking-tighter">{name}</h3>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-wibl-teal uppercase tracking-widest bg-wibl-teal/10 px-2 py-0.5 rounded-md">
+                        {agents === Infinity ? 'Unlimited' : agents} {agents === 1 ? 'Agent' : 'Agents'}
                     </span>
                     {tools > 0 && (
-                        <>
-                            <span className="text-xs text-navy-400">•</span>
-                            <span className="text-sm text-wibl-teal font-black">
-                                {tools === Infinity ? '∞' : tools} {tools === 1 ? 'tool' : 'tools'}
-                            </span>
-                        </>
+                        <span className="text-[10px] font-black text-navy-400 uppercase tracking-widest border border-navy-100 px-2 py-0.5 rounded-md">
+                            {tools === Infinity ? '∞' : tools} Tools
+                        </span>
                     )}
                 </div>
             </div>
 
             {/* Price */}
             <div className="mb-8">
-                <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-display font-black text-gradient">
+                <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-display font-black text-navy-900 tracking-tighter leading-none">
                         {formatPrice(price)}
                     </span>
                     {price !== null && (
-                        <span className="text-navy-400 font-bold">/month</span>
+                        <span className="text-sm text-navy-400 font-bold uppercase tracking-widest ml-1">/ mo</span>
                     )}
                 </div>
                 {price !== null && (
-                    <p className="text-xs text-navy-400 font-medium mt-1">
-                        Billed monthly
+                    <p className="text-[10px] text-navy-300 font-black uppercase tracking-widest mt-2 ml-1">
+                        Billed Monthly
                     </p>
                 )}
             </div>
 
             {/* Features */}
-            <ul className="space-y-3 mb-8 flex-1">
-                {features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                        <div className="shrink-0 mt-0.5">
-                            <div className="w-5 h-5 rounded-full bg-wibl-teal/10 flex items-center justify-center">
-                                <Check size={14} className="text-wibl-teal" strokeWidth={3} />
+            <div className="mb-8 pt-8 border-t border-navy-50 flex-1">
+                <p className="text-[10px] font-black text-navy-400 uppercase tracking-widest mb-4">Included Features</p>
+                <ul className="space-y-4">
+                    {features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-3">
+                            <div className="shrink-0 mt-0.5">
+                                <div className="w-5 h-5 rounded-full bg-wibl-mint/10 flex items-center justify-center">
+                                    <Check size={12} className="text-wibl-mint" strokeWidth={4} />
+                                </div>
                             </div>
-                        </div>
-                        <span className="text-sm text-navy-600 font-medium leading-relaxed">
-                            {feature}
-                        </span>
-                    </li>
-                ))}
-            </ul>
+                            <span className="text-[13px] text-navy-600 font-medium leading-tight">
+                                {feature}
+                            </span>
+                        </li>
+                    ))}
+                </ul>
+            </div>
 
             {/* CTA */}
             <Button
-                variant={popular ? 'coral' : 'secondary'}
+                variant={popular ? 'primary' : 'ghost'}
                 size="lg"
-                className="w-full"
+                className={cn(
+                    "w-full py-7 font-black tracking-widest text-[11px] uppercase transition-all duration-300",
+                    popular ? "shadow-glow" : "border-navy-100 hover:border-navy-900"
+                )}
                 onClick={onSelect}
                 disabled={isCurrentPlan || isLoading || !priceId}
                 isLoading={isLoading}
             >
-                {isCurrentPlan ? 'Current Plan' : price === null ? 'Contact Sales' : 'Get Started'}
+                {isCurrentPlan ? 'Active Plan' : price === null ? 'Contact Enterprise' : 'Select Plan'}
             </Button>
-
-            {isCurrentPlan && (
-                <p className="text-xs text-center text-wibl-teal font-black mt-3">
-                    ✓ Active Plan
-                </p>
-            )}
         </div>
     );
 
