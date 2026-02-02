@@ -9,28 +9,33 @@ interface LoadingDotsProps {
 
 export const LoadingDots: React.FC<LoadingDotsProps> = ({
     color = 'gradient',
-    size = 'md',
     className
 }) => {
-    const sizes = {
-        sm: "h-1 w-1",
-        md: "h-2 w-2",
-        lg: "h-3 w-3",
-    };
-
-    const colors = {
-        gradient: "bg-wibl-teal", // Will use stagger and gradient logic
-        teal: "bg-wibl-teal",
-        white: "bg-white",
-    };
-
-    const dotClass = cn("rounded-full animate-bounce", sizes[size]);
-
     return (
-        <div className={cn("flex items-center gap-1", className)}>
-            <div className={cn(dotClass, color === 'gradient' ? "bg-wibl-mint" : colors[color])} style={{ animationDelay: '0ms' }} />
-            <div className={cn(dotClass, color === 'gradient' ? "bg-wibl-teal" : colors[color])} style={{ animationDelay: '150ms' }} />
-            <div className={cn(dotClass, color === 'gradient' ? "bg-wibl-sky" : colors[color])} style={{ animationDelay: '300ms' }} />
+        <div className={cn("flex items-end gap-1.5 h-6 px-1", className)}>
+            {[0, 1, 2, 3].map((i) => (
+                <div
+                    key={i}
+                    className={cn(
+                        "w-1 rounded-full animate-wibl-pulse",
+                        color === 'gradient' ? "bg-gradient-to-t from-wibl-teal to-wibl-mint" :
+                            color === 'teal' ? "bg-wibl-teal" : "bg-white"
+                    )}
+                    style={{
+                        animationDelay: `${i * 150}ms`,
+                        height: '40%'
+                    }}
+                />
+            ))}
+            <style jsx>{`
+                @keyframes wibl-pulse {
+                    0%, 100% { height: 40%; opacity: 0.4; }
+                    50% { height: 100%; opacity: 1; }
+                }
+                .animate-wibl-pulse {
+                    animation: wibl-pulse 1s ease-in-out infinite;
+                }
+            `}</style>
         </div>
     );
 };

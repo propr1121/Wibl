@@ -20,7 +20,7 @@ export function HelpWidget() {
         {
             id: '1',
             variant: 'assistant',
-            content: "Hi! 👋 I'm here to help. What can I assist you with today?",
+            content: "Hi! I'm here to help. What can I assist you with today?",
             timestamp: 'Just now',
         },
     ]);
@@ -56,10 +56,12 @@ export function HelpWidget() {
             <div className="fixed bottom-6 right-6 z-50 group">
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="w-14 h-14 rounded-full gradient-brand shadow-wibl-lg hover:shadow-glow transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95"
+                    className="w-14 h-14 rounded-full bg-gradient-to-br from-wibl-mint to-wibl-teal shadow-wibl-lg hover:shadow-glow transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-95 group"
                     aria-label="Open help"
                 >
-                    <Logo size="sm" variant="icon" className="w-8 h-8" />
+                    <span className="text-xl font-display font-black tracking-tighter mt-0.5">
+                        <span className="text-navy-900 leading-none">W</span><span className="text-white leading-none">.</span>
+                    </span>
                 </button>
 
                 {/* Tooltip */}
@@ -78,10 +80,12 @@ export function HelpWidget() {
             )}
         >
             {/* Header */}
-            <div className="gradient-brand px-4 py-3 rounded-t-wibl flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                        <Logo size="sm" variant="icon" className="w-5 h-5" />
+            <div className="gradient-brand px-4 py-3 rounded-t-wibl flex items-center justify-between shadow-premium-sm relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 flex items-center justify-center">
+                        <span className="text-sm font-display font-black tracking-tighter mt-0.5">
+                            <span className="text-navy-900">W</span><span className="text-white">.</span>
+                        </span>
                     </div>
                     <div>
                         <h3 className="text-sm font-display font-black text-white">

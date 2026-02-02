@@ -99,10 +99,10 @@ export default function KnowledgePage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="animate-fade-in">
                     <h1 className="text-4xl font-display font-black text-navy-700 mb-2">
-                        Knowledge Base
+                        Library
                     </h1>
                     <p className="text-navy-500 font-medium text-lg">
-                        Teach your agents with documents, URLs, and Q&A pairs
+                        Manage the data your agents use to learn
                     </p>
                 </div>
                 <Button
@@ -125,7 +125,7 @@ export default function KnowledgePage() {
                         <Input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Search knowledge..."
+                            placeholder="Search library..."
                             className="pl-12 bg-navy-50/50 border-none focus:ring-2 focus:ring-wibl-teal/20"
                         />
                     </div>
@@ -318,11 +318,11 @@ function KnowledgeCard({
 
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-navy-50">
                     <div>
-                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mb-0.5">Tokens</p>
-                        <p className="font-display font-black text-navy-700">{item.status === 'ready' ? item.tokens.toLocaleString() : '--'}</p>
+                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mb-0.5">Complexity</p>
+                        <p className="font-display font-black text-navy-700">{item.status === 'ready' ? (item.tokens > 1000 ? (item.tokens / 1000).toFixed(1) + 'k' : item.tokens) : '--'}</p>
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mb-0.5">Chunks</p>
+                        <p className="text-[10px] font-black text-navy-300 uppercase tracking-widest mb-0.5">Sections</p>
                         <p className="font-display font-black text-navy-700">{item.status === 'ready' ? item.chunks : '--'}</p>
                     </div>
                 </div>
@@ -378,7 +378,7 @@ function EmptyState({ onAction }: { onAction: () => void }) {
             </div>
 
             <h3 className="text-2xl lg:text-3xl font-display font-black text-navy-800 mb-3">
-                Your knowledge base is empty
+                Your library is empty
             </h3>
             <p className="text-navy-500 font-medium text-lg mb-10 max-w-lg mx-auto leading-relaxed">
                 Upload documents, paste URLs, or add Q&A pairs to train your agents with your specific business data.

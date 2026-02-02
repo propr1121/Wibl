@@ -251,7 +251,7 @@ function Hero() {
                                                 <Rocket size={16} className="text-white" />
                                                 <span className="text-white font-black">Deployed!</span>
                                             </div>
-                                            Your agent is now live on both channels. First visitor already asking about pricing! 🎉
+                                            Your agent is now live on both channels. First visitor already asking about pricing!
                                         </div>
                                     </div>
                                 )}

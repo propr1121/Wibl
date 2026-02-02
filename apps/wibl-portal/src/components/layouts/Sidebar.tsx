@@ -34,13 +34,10 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
-    { name: 'My Agents', href: '/agents', icon: Bot },
-    { name: 'Analytics', href: '/analytics', icon: TrendingUp },
-    { name: 'Knowledge Base', href: '/knowledge', icon: BookOpen },
-    { name: 'Tool Integrations', href: '/tools', icon: Plug },
+    { name: 'Overview', href: '/dashboard', icon: LayoutGrid },
+    { name: 'Agents', href: '/agents', icon: Bot },
+    { name: 'Library', href: '/knowledge', icon: BookOpen },
     { name: 'Settings', href: '/settings', icon: Settings },
-    { name: 'Help', href: '/help', icon: HelpCircle },
 ];
 
 export function Sidebar({

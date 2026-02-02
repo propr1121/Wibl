@@ -15,10 +15,10 @@ export const Logo: React.FC<LogoProps> = ({
   className
 }) => {
   const sizes = {
-    sm: "text-xl",
+    sm: "text-lg",
     md: "text-2xl",
-    lg: "text-3xl",
-    xl: "text-5xl",
+    lg: "text-4xl",
+    xl: "text-6xl",
   };
 
   return (
@@ -31,9 +31,9 @@ export const Logo: React.FC<LogoProps> = ({
         "font-display font-black tracking-tight",
         sizes[size]
       )}>
-        <span className="text-wibl-teal">W</span>
+        <span className="text-wibl-teal uppercase">W</span>
         <span className="text-navy-800">{variant === 'full' ? 'ibl' : ''}</span>
-        {variant === 'full' && <span className="text-wibl-teal">.</span>}
+        <span className="text-navy-900">.</span>
       </span>
     </div>
   );

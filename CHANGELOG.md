@@ -2,6 +2,17 @@
 
 Docs: https://docs.clawd.bot
 
+## 2026.2.2
+
+### Highlights
+- **Premium Agent Wizard**: Re-architected the agent creation flow with a high-fidelity conversational UI.
+- **Advanced Identity Picker**: New visual selection for agent names and a curated library of premium avatars.
+- **Enterprise Intelligence & Safety**: Integrated PII Redaction, Strict Sandboxing, and Natural Response Delay (human-like rhythms).
+- **Expanded Knowledge Architecture**: Support for PDF/XLS uploads, URL crawling, and active Vector Memory (RAG) configuration.
+- **Business Integrations**: Direct setup for Google Calendar API, Enterprise CRM, Real-time Web Search, and Secure Payments.
+- **Multi-Channel Deployment**: Seamless one-click launch sequence for WhatsApp Business, Slack Enterprise, Telegram, and Web Widgets.
+- **UI/UX Refinement**: "Apple-esque" aesthetic with "Wibl Pulse" animations, symmetrical rounded bubbles, and brand-gradient styling.
+
 ## 2026.1.26
 
 ### Highlights
