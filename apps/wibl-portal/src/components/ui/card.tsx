@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     variant?: 'elevated' | 'outlined' | 'gradient' | 'glass' | 'glass-dark' | 'premium';
     padding?: 'none' | 'sm' | 'md' | 'lg';
     hoverable?: boolean;

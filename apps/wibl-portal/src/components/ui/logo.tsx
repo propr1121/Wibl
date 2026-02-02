@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface LogoProps {
+export interface LogoProps {
   variant?: 'full' | 'icon';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   animated?: boolean;

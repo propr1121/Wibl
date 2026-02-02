@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface ChatBubbleProps {
+export interface ChatBubbleProps {
     variant?: 'user' | 'assistant' | 'system';
     children: React.ReactNode;
     timestamp?: string;

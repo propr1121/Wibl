@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface GradientBorderProps {
+export interface GradientBorderProps {
     children: React.ReactNode;
     animated?: boolean;
     width?: number;

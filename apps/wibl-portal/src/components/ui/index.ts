@@ -13,13 +13,13 @@ export { Logo } from './logo';
 export { Modal } from './modal';
 
 // Re-export types for convenience
-export type { default as AvatarProps } from './avatar';
-export type { default as BadgeProps } from './badge';
-export type { default as ButtonProps } from './button';
-export type { default as CardProps } from './card';
-export type { default as ChatBubbleProps } from './chat-bubble';
-export type { default as GradientBorderProps } from './gradient-border';
-export type { default as InputProps } from './input';
-export type { default as LoadingDotsProps } from './loading-dots';
-export type { default as LogoProps } from './logo';
-export type { default as ModalProps } from './modal';
+export type { AvatarProps } from './avatar';
+export type { BadgeProps } from './badge';
+export type { ButtonProps } from './button';
+export type { CardProps } from './card';
+export type { ChatBubbleProps } from './chat-bubble';
+export type { GradientBorderProps } from './gradient-border';
+export type { InputProps } from './input';
+export type { LoadingDotsProps } from './loading-dots';
+export type { LogoProps } from './logo';
+export type { ModalProps } from './modal';

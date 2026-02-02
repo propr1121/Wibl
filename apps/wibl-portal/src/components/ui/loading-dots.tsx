@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from "@/lib/utils";
 
-interface LoadingDotsProps {
+export interface LoadingDotsProps {
     color?: 'gradient' | 'teal' | 'white';
     size?: 'sm' | 'md' | 'lg';
     className?: string;

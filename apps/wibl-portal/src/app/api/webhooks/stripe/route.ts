@@ -80,10 +80,10 @@ export async function POST(req: NextRequest) {
                     .update({
                         status: subscription.status,
                         current_period_start: new Date(
-                            subscription.current_period_start * 1000
+                            (subscription as any).current_period_start * 1000
                         ).toISOString(),
                         current_period_end: new Date(
-                            subscription.current_period_end * 1000
+                            (subscription as any).current_period_end * 1000
                         ).toISOString(),
                         cancel_at_period_end: subscription.cancel_at_period_end,
                     })
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 
             case 'invoice.payment_failed': {
                 const invoice = event.data.object as Stripe.Invoice;
-                const subscriptionId = invoice.subscription as string;
+                const subscriptionId = (invoice as any).subscription as string;
 
                 // Update subscription status to past_due
                 const { error } = await supabase
@@ -147,9 +147,4 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// Disable body parsing for Stripe webhooks
-export const config = {
-    api: {
-        bodyParser: false,
-    },
-};
+// Webhook handlers don't need bodyParser config in App Router

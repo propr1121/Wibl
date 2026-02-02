@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import { ExternalLink, Zap, Users, Wrench, TrendingUp, Activity, Database, Shield } from 'lucide-react';
 import { loadStripe } from '@stripe/stripe-js';
 import { useHeaderConfig } from '@/components/layouts/DashboardContext';
+import { cn } from '@/lib/utils';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 

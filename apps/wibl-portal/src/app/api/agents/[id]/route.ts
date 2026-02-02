@@ -4,9 +4,10 @@ import { updateAgentSchema } from '@/lib/validations/agent';
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -17,7 +18,7 @@ export async function GET(
         const { data: agent, error } = await supabase
             .from('agents')
             .select('*')
-            .eq('id', params.id)
+            .eq('id', id)
             .eq('user_id', user.id)
             .single();
 
@@ -37,9 +38,10 @@ export async function GET(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -57,7 +59,7 @@ export async function PATCH(
         const { data: agent, error } = await supabase
             .from('agents')
             .update(validatedData.data)
-            .eq('id', params.id)
+            .eq('id', id)
             .eq('user_id', user.id)
             .select()
             .single();
@@ -78,9 +80,10 @@ export async function PATCH(
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         const supabase = await createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -91,7 +94,7 @@ export async function DELETE(
         const { error } = await supabase
             .from('agents')
             .delete()
-            .eq('id', params.id)
+            .eq('id', id)
             .eq('user_id', user.id);
 
         if (error) {

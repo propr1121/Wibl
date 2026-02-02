@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from './button';
 
-interface ModalProps {
+export interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
     title?: string;
