@@ -1,5 +1,0 @@
-{
-    "version": 2,
-    "buildCommand": "cd apps/wibl-portal && npm install && npm run build",
-    "outputDirectory": "apps/wibl-portal/.next"
-}
