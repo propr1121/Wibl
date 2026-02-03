@@ -151,7 +151,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 const WIZARD_FLOW: Step[] = [
     {
         id: 'purpose',
-        wiblMessage: "Let's bring your AI agent to life. What's the core mission?\n\nDescribe the task they'll focus on.",
+        wiblMessage: "Let's bring your AI agent to life. What's the core mission?\nDescribe the task they'll focus on.",
         inputType: 'textarea',
         placeholder: "e.g., Handle customer refunds, schedule viewings via Google Calendar, or manage a waitlist...",
         validation: { minLength: 10 },
@@ -521,14 +521,14 @@ export default function AgentWizardPage() {
                             <div
                                 key={msg.id}
                                 className={cn(
-                                    "flex gap-4 animate-reveal",
+                                    "flex gap-4 animate-reveal items-start",
                                     msg.role === 'user' ? "flex-row-reverse" : "flex-row"
                                 )}
                             >
                                 {/* Avatar */}
                                 <div className={cn(
-                                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border border-navy-100 bg-white group-hover:scale-105 transition-transform",
-                                    msg.role === 'user' ? "mt-1" : "mt-1"
+                                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border border-navy-100 bg-white",
+                                    msg.role === 'user' ? "mt-1" : "mt-0.5"
                                 )}>
                                     {msg.role === 'user' ? (
                                         <span className="text-[10px] font-black text-navy-400">ME</span>
@@ -540,23 +540,23 @@ export default function AgentWizardPage() {
                                 </div>
 
                                 <div className={cn(
-                                    "px-6 py-4 rounded-2xl text-sm font-normal leading-relaxed shadow-premium-sm transition-all hover:shadow-premium-md whitespace-pre-line",
+                                    "text-sm font-normal leading-relaxed whitespace-pre-line",
                                     msg.role === 'user'
-                                        ? "bg-navy-900 text-white"
-                                        : "bg-white/80 text-navy-700 border border-navy-100 backdrop-blur-sm"
+                                        ? "px-6 py-4 rounded-2xl bg-navy-900 text-white shadow-sm"
+                                        : "text-navy-800 pt-0.5"
                                 )}>
-                                    {/* Gradient accent removed for cleaner look */}
                                     {msg.content}
                                 </div>
                             </div>
                         ))}
 
                         {state.isThinking && (
-                            <div className="flex gap-4 items-start animate-reveal">
+                            <div className="flex gap-4 items-center animate-reveal">
                                 <div className="w-10 h-10 rounded-xl bg-white border border-navy-100 flex items-center justify-center text-navy-900 font-display font-black text-xs shrink-0 shadow-sm">
                                     <span className="text-wibl-teal">W</span>.
                                 </div>
-                                <div className="px-4 py-3 rounded-2xl bg-white border border-navy-100 shadow-sm">
+                                {/* Just dots, no container - aligned with avatar */}
+                                <div className="mt-5">
                                     <LoadingDots color="gray" size="sm" />
                                 </div>
                             </div>
@@ -689,7 +689,7 @@ function WizardInput({
         const validateInput = async (input: string) => {
             if (input.trim().length < 10) {
                 setValidation(null);
-                return;
+                return null;
             }
 
             setIsValidating(true);
@@ -700,17 +700,20 @@ function WizardInput({
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        stepId: currentStepId, // Use the passed parameter
+                        stepId: currentStepId,
                         input: input.trim()
                     })
                 });
 
                 const result = await response.json();
                 setValidation(result);
+                return result;
             } catch (error) {
                 console.error('Validation failed:', error);
                 // Fail open - don't block user
-                setValidation({ isValid: true });
+                const fallback = { isValid: true };
+                setValidation(fallback);
+                return fallback;
             } finally {
                 setIsValidating(false);
             }
@@ -730,23 +733,29 @@ function WizardInput({
             }, 1000);
         };
 
-        const handleSubmit = () => {
+        const handleSubmit = async () => {
             if (text.length < 10) return;
 
-            // Check validation before submitting
-            if (validation && !validation.isValid) {
-                // Show feedback prominently
+            // Ensure validation has run
+            let validationResult = validation;
+            if (!validationResult) {
+                validationResult = await validateInput(text);
+            }
+
+            // Block submission if validation fails
+            if (validationResult && !validationResult.isValid) {
+                // Validation feedback is already shown in UI  
                 return;
             }
 
             onSubmit(text);
         };
 
-        const canSubmit = text.length >= 10 && (!validation || validation.isValid);
+        // Only allow submit if text is long enough AND validation passed
+        const canSubmit = text.length >= 10 && validation?.isValid === true;
 
         return (
             <div className="relative">
-                {/* Removed gradient glow for cleaner look */}
                 <div className="relative">
                     <textarea
                         autoFocus
@@ -754,7 +763,7 @@ function WizardInput({
                         onChange={(e) => handleTextChange(e.target.value)}
                         placeholder={placeholder}
                         className={cn(
-                            "w-full min-h-[120px] bg-white border p-5 px-6 pr-14 text-[15px] font-normal text-navy-800 placeholder:text-navy-400 rounded-2xl shadow-sm focus:ring-2 focus:border-transparent outline-none transition-all resize-none",
+                            "w-full min-h-[120px] bg-white border p-5 px-6 pr-16 text-[15px] font-normal text-navy-800 placeholder:text-navy-400 rounded-2xl shadow-sm focus:ring-2 focus:border-transparent outline-none transition-all resize-none",
                             validation && !validation.isValid
                                 ? "border-wibl-coral/60 focus:ring-wibl-coral/20"
                                 : "border-navy-200 focus:ring-wibl-teal/20"
@@ -766,8 +775,8 @@ function WizardInput({
                             }
                         }}
                     />
-                    {/* Send button - smaller, cleaner, bottom-right corner like Claude */}
-                    <div className="absolute bottom-3 right-3 flex items-center gap-3">
+                    {/* Send button - better positioned with more breathing room */}
+                    <div className="absolute bottom-4 right-4 flex items-center gap-3">
                         {isValidating && (
                             <div className="flex items-center gap-1.5 text-[10px] font-medium text-navy-400">
                                 <LoadingDots />
@@ -790,21 +799,21 @@ function WizardInput({
                     </div>
                 </div>
 
-                {/* Validation Feedback */}
+                {/* Validation Feedback - improved design */}
                 {validation && !validation.isValid && (
                     <div className="mt-3 animate-reveal">
-                        <div className="bg-wibl-coral/5 border border-wibl-coral/20 rounded-xl p-3.5">
-                            <div className="flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-full bg-wibl-coral/10 flex items-center justify-center shrink-0 mt-0.5">
-                                    <HelpCircle size={14} className="text-wibl-coral" />
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                            <div className="flex items-start gap-3">
+                                <div className="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
+                                    <HelpCircle size={12} className="text-red-600" />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="text-[13px] font-medium text-navy-700 mb-2">
+                                    <p className="text-[13px] font-medium text-red-900 mb-2">
                                         {validation.feedback}
                                     </p>
                                     {validation.suggestions && validation.suggestions.length > 0 && (
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-semibold text-navy-400 uppercase tracking-wide">
+                                        <div className="space-y-1.5 mt-2">
+                                            <p className="text-[10px] font-semibold text-red-700 uppercase tracking-wide">
                                                 Try something like:
                                             </p>
                                             {validation.suggestions.map((suggestion, i) => (
@@ -814,7 +823,7 @@ function WizardInput({
                                                         setText(suggestion);
                                                         handleTextChange(suggestion);
                                                     }}
-                                                    className="block w-full text-left text-[13px] text-wibl-teal hover:text-wibl-teal/80 transition-colors font-normal"
+                                                    className="block w-full text-left text-[13px] text-wibl-teal hover:text-wibl-teal/80 transition-colors font-normal py-1"
                                                 >
                                                     → {suggestion}
                                                 </button>

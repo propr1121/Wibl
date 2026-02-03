@@ -34,15 +34,23 @@ function basicValidation(
 
     // Common test/gibberish patterns
     const gibberishPatterns = [
-        /^(test|asdf|qwerty|1234|aaa|xxx|hello|hi)$/i,
+        /^(test|asdf|qwerty|1234|aaa|xxx|hello|hi|lol|omg|wtf|abc|def)$/i,
         /^[a-z]{1,3}$/i, // Single word, 3 chars or less
         /^(.)\1{4,}$/,  // Repeated character (aaaa, 1111)
         /^[^a-zA-Z]*$/,  // No letters at all
+        /^[a-z]{10,}$/i, // Single word with 10+ lowercase letters (likely gibberish)
+        /[bcdfghjklmnpqrstvwxyz]{6,}/i, // 6+ consonants in a row (very rare in real text)
+        /^[^aeiou\s]{15,}/i, // 15+ chars with almost no vowels
     ];
 
     const isGibberish = gibberishPatterns.some(pattern => pattern.test(trimmed));
 
-    if (isGibberish) {
+    // Additional check: ratio of consonants to vowels
+    const vowelCount = (trimmed.match(/[aeiou]/gi) || []).length;
+    const consonantCount = (trimmed.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
+    const hasUnusualRatio = consonantCount > 0 && (vowelCount / consonantCount) < 0.3; // Less than 30% vowels
+
+    if (isGibberish || (trimmed.length > 15 && hasUnusualRatio)) {
         return {
             isValid: false,
             feedback: "Hmm, that doesn't look like a real task description. Can you describe what you want your agent to do?",
