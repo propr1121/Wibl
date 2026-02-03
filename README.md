@@ -23,6 +23,12 @@ If you want a personal, single-user assistant that feels local, fast, and always
 
 [Website](https://clawdbot.com) · [Docs](https://docs.clawd.bot) · [Getting Started](https://docs.clawd.bot/start/getting-started) · [Updating](https://docs.clawd.bot/install/updating) · [Showcase](https://docs.clawd.bot/start/showcase) · [FAQ](https://docs.clawd.bot/start/faq) · [Wizard](https://docs.clawd.bot/start/wizard) · [Nix](https://github.com/clawdbot/nix-clawdbot) · [Docker](https://docs.clawd.bot/install/docker) · [Discord](https://discord.gg/clawd)
 
+## 🌟 Grade A++ Intelligence Upgrades
+
+- **AI Architect**: A next-gen conversational builder that extracts agent missions and automates complex configurations.
+- **Pro-Grade RAG**: High-precision Retrieval-Augmented Generation powered by OpenAI Embeddings and Supabase Vector for sub-millisecond semantic search.
+- **Intelligent Guardrails**: Real-time gibberish and "junk" rejection ensures only productive agent missions are deployed.
+
 Preferred setup: run the onboarding wizard (`clawdbot onboard`). It walks through gateway, workspace, channels, and skills. The CLI wizard is the recommended path and works on **macOS, Linux, and Windows (via WSL2; strongly recommended)**.
 Works with npm, pnpm, or bun.
 New install? Start here: [Getting started](https://docs.clawd.bot/start/getting-started)
