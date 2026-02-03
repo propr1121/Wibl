@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Sparkles, CheckCircle2, Clock, Zap, Check, LayoutDashboard, RefreshCw, X } from 'lucide-react';
+import { ArrowRight, Sparkles, CheckCircle2, Clock, Zap, Check, LayoutDashboard, RefreshCw, X, Telescope } from 'lucide-react';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
@@ -204,7 +204,7 @@ export default function AIAgentBuilder() {
 
     const getPhaseInfo = () => {
         const phases = {
-            discovery: { label: 'Discovery', icon: Sparkles, color: 'text-purple-600' },
+            discovery: { label: 'Discovery', icon: Telescope, color: 'text-wibl-teal' },
             configuration: { label: 'Configuration', icon: Zap, color: 'text-blue-600' },
             validation: { label: 'Validation', icon: CheckCircle2, color: 'text-green-600' },
             complete: { label: 'Complete', icon: CheckCircle2, color: 'text-green-600' },
@@ -217,202 +217,309 @@ export default function AIAgentBuilder() {
     const PhaseIcon = phaseInfo.icon || Sparkles;
 
     return (
-        <div className="h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex overflow-hidden relative">
+        <div className="h-screen bg-white z-50 flex flex-col lg:flex-row overflow-hidden font-sans">
             {isDeployed && <SuccessOverlay name={extractedConfig.name || 'Agent'} />}
 
-            {/* Main Chat Area */}
-            <div className="flex-1 flex flex-col min-w-0">
-                {/* Header */}
-                <div className="border-b border-slate-200 bg-white/80 backdrop-blur-sm z-10">
-                    <div className="max-w-4xl mx-auto px-8 py-6">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-2xl font-bold text-slate-900">Create Your AI Agent</h1>
-                                <p className="text-sm text-slate-600 mt-1">
-                                    Let's have a conversation to build the perfect agent for you
-                                </p>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200 shrink-0">
-                                    <PhaseIcon size={16} className={phaseInfo.color} />
-                                    <span className="text-sm font-medium text-slate-700">{phaseInfo.label}</span>
-                                </div>
-                                <Link href="/agents">
-                                    <button className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400 hover:text-slate-600">
-                                        <X size={24} />
-                                    </button>
-                                </Link>
+            {/* Left Column: Wibl Guide & Brand (35%) */}
+            <div className="w-full lg:w-[32%] bg-navy-900 flex flex-col items-center justify-center p-8 lg:p-12 relative overflow-hidden shrink-0">
+                {/* Background effects */}
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-teal-500 opacity-20 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-coral-dark opacity-10 blur-[120px] rounded-full" />
+
+                {/* Back Button */}
+                <Link
+                    href="/agents"
+                    className="absolute top-8 left-8 text-navy-400 hover:text-white transition-colors flex items-center gap-2 font-black uppercase tracking-wider text-xs z-20"
+                >
+                    <ArrowRight size={16} className="rotate-180" /> Back to Dashboard
+                </Link>
+
+                {/* Wibl Mascot / Pulsating Logo */}
+                <div className="relative mb-12 group">
+                    {/* Glowing outer rings */}
+                    <div className="absolute inset-[-40px] rounded-full bg-teal-400/10 blur-[80px] animate-pulse-soft" />
+                    <div className={cn(
+                        "absolute inset-[-25px] rounded-full border border-teal-400/20 transition-all duration-1000",
+                        isThinking ? "animate-spin-slow opacity-100 scale-110 border-solid border-teal-400/40" : "opacity-40"
+                    )} />
+
+                    <div className="w-40 h-40 lg:w-52 lg:h-52 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 p-1.5 shadow-[0_0_100px_rgba(0,242,234,0.12)] relative z-10 flex items-center justify-center transition-all duration-500 hover:animate-logo-pulsate">
+                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-16 lg:p-20">
+                            <div className="text-4xl lg:text-5xl font-display font-black relative">
+                                <span className="text-teal-500 leading-none uppercase">W</span>
+                                <span className="text-navy-900 leading-none absolute left-[82%] bottom-0">.</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto scroll-smooth">
-                    <div className="max-w-4xl mx-auto px-8 py-8 space-y-6">
-                        {messages.map((message, i) => (
+                <div className="text-center z-10">
+                    <h2 className="text-3xl lg:text-5xl font-display font-black mb-2 tracking-tight">
+                        <span className="text-teal-400">W</span><span className="text-white">ibl</span><span className="text-teal-400">.</span>
+                    </h2>
+                    <p className="text-navy-300 font-bold text-lg mb-16 opacity-50 tracking-wide uppercase text-[10px]">
+                        Conversational Builder
+                    </p>
+
+                    {/* Phase Tracker Dots (Simplified from old stepped dots) */}
+                    <div className="flex items-center justify-center gap-3">
+                        {['discovery', 'configuration', 'validation', 'complete'].map((p, i) => (
                             <div
-                                key={i}
+                                key={p}
+                                title={p.charAt(0).toUpperCase() + p.slice(1)}
                                 className={cn(
-                                    "flex gap-4 items-start animate-reveal",
-                                    message.role === 'user' && "flex-row-reverse"
+                                    "w-3 h-3 rounded-full transition-all duration-500",
+                                    phase === p ? "w-8 bg-teal-400 scale-110 shadow-lg shadow-teal-400/40" :
+                                        messages.some(m => m.role === 'assistant') && i <= ['discovery', 'configuration', 'validation', 'complete'].indexOf(phase)
+                                            ? "bg-teal-400/60" : "bg-navy-700/50"
                                 )}
-                            >
-                                {/* Avatar */}
-                                <div className={cn(
-                                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border",
-                                    message.role === 'user'
-                                        ? "bg-slate-900 border-slate-700"
-                                        : "bg-gradient-to-br from-teal-400 to-teal-600 border-teal-500"
-                                )}>
-                                    {message.role === 'user' ? (
-                                        <span className="text-[10px] font-bold text-white">ME</span>
-                                    ) : (
-                                        <span className="text-sm font-black text-white">W</span>
-                                    )}
-                                </div>
-
-                                {/* Message */}
-                                <div className={cn(
-                                    "max-w-[85%] sm:max-w-2xl text-[15px] leading-relaxed whitespace-pre-line",
-                                    message.role === 'user'
-                                        ? "px-6 py-4 bg-slate-900 text-white rounded-2xl shadow-sm"
-                                        : "text-slate-800 py-1"
-                                )}>
-                                    {message.content}
-                                </div>
-                            </div>
+                            />
                         ))}
-
-                        {/* Thinking Indicator */}
-                        {isThinking && (
-                            <div className="flex gap-4 items-start animate-reveal">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border bg-gradient-to-br from-teal-400 to-teal-600 border-teal-500">
-                                    <span className="text-sm font-black text-white">W</span>
-                                </div>
-                                <div className="mt-4">
-                                    <LoadingDots color="gray" size="sm" />
-                                </div>
-                            </div>
-                        )}
-
-                        <div ref={messagesEndRef} />
+                    </div>
+                    <div className="flex flex-col items-center mt-8">
+                        <p className="text-navy-500 font-black uppercase tracking-[0.3em] text-[11px] border-b border-navy-800 pb-1 mb-2 w-12 text-center">
+                            Phase
+                        </p>
+                        <p className="text-teal-400 font-black uppercase tracking-[0.2em] text-[10px] opacity-90">
+                            {phaseInfo.label}
+                        </p>
                     </div>
                 </div>
 
-                {/* Input Area */}
-                <div className="border-t border-slate-200 bg-white/80 backdrop-blur-sm z-10">
-                    <div className="max-w-4xl mx-auto px-8 py-6">
-                        <div className="relative">
-                            <textarea
-                                ref={inputRef}
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Type your message..."
-                                disabled={isThinking || isComplete || isDeployed}
-                                className="w-full min-h-[80px] max-h-[200px] bg-white border border-slate-300 rounded-2xl px-6 py-4 pr-16 text-[15px] text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-none disabled:bg-slate-50 disabled:text-slate-400 shadow-sm transition-all"
-                            />
-                            <button
-                                onClick={sendMessage}
-                                disabled={!input.trim() || isThinking || isComplete || isDeployed}
-                                className={cn(
-                                    "absolute bottom-4 right-4 w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                                    input.trim() && !isThinking && !isComplete && !isDeployed
-                                        ? "bg-teal-600 text-white hover:bg-teal-700 shadow-lg shadow-teal-600/30"
-                                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                                )}
-                            >
-                                <ArrowRight size={20} />
-                            </button>
-                        </div>
-                    </div>
+                {/* Bottom Guide Text */}
+                <div className="absolute bottom-12 left-0 right-0 px-12 text-center text-navy-400 text-xs font-medium opacity-40">
+                    Proprietary Wisdom-First Architecture &copy; 2026 Wibl.
                 </div>
             </div>
 
-            {/* Config Sidebar */}
-            <div className="w-96 border-l border-slate-200 bg-white flex flex-col shrink-0 hidden lg:flex">
-                {/* Sidebar Header */}
-                <div className="border-b border-slate-200 px-6 py-6">
-                    <h2 className="text-lg font-bold text-slate-900">Agent Configuration</h2>
-                    <p className="text-sm text-slate-600 mt-1">
-                        Real-time extraction from our conversation
-                    </p>
-                </div>
+            {/* Main Builder Area: Chat + Extraction */}
+            <div className="flex-1 flex overflow-hidden relative bg-canvas-subtle">
 
-                {/* Config Items */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {Object.keys(extractedConfig).length === 0 ? (
-                        <div className="text-center py-12">
-                            <Clock size={48} className="mx-auto text-slate-300 mb-4" />
-                            <p className="text-sm text-slate-500">
-                                As we chat, I'll extract your agent's configuration here
+                {/* Middle Section: Chat Interface */}
+                <div className="flex-1 flex flex-col min-w-0">
+                    {/* Header */}
+                    <div className="border-b border-navy-100 bg-white/80 backdrop-blur-sm z-10">
+                        <div className="mx-auto w-full px-8 py-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-xl font-bold text-navy-900">Agent Architect</h1>
+                                    <p className="text-xs text-navy-500 mt-1">
+                                        Describe your mission. We'll build the brain together.
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 bg-navy-50 rounded-lg border border-navy-100 shrink-0">
+                                        <PhaseIcon size={14} className={phaseInfo.color} />
+                                        <span className="text-xs font-bold text-navy-700 uppercase tracking-tight">{phaseInfo.label}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto scroll-smooth">
+                        <div className="max-w-3xl mx-auto px-8 py-8 space-y-8">
+                            {messages.map((message, i) => (
+                                <div
+                                    key={i}
+                                    className={cn(
+                                        "flex gap-4 items-start animate-reveal",
+                                        message.role === 'user' && "flex-row-reverse"
+                                    )}
+                                >
+                                    {/* Avatar */}
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border",
+                                        message.role === 'user'
+                                            ? "bg-navy-900 border-navy-700"
+                                            : "bg-gradient-to-br from-teal-400 to-teal-600 border-teal-500"
+                                    )}>
+                                        {message.role === 'user' ? (
+                                            <span className="text-[10px] font-bold text-white">ME</span>
+                                        ) : (
+                                            <div className="text-sm font-display font-black relative">
+                                                <span className="text-white leading-none uppercase">W</span>
+                                                <span className="text-navy-900 leading-none absolute left-[82%] bottom-0">.</span>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Message */}
+                                    <div className={cn(
+                                        "max-w-[85%] sm:max-w-xl text-[14px] leading-relaxed whitespace-pre-line",
+                                        message.role === 'user'
+                                            ? "px-6 py-4 bg-navy-900 text-white rounded-2xl shadow-sm"
+                                            : "text-navy-800 py-1"
+                                    )}>
+                                        {message.content}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Thinking Indicator */}
+                            {isThinking && (
+                                <div className="flex gap-4 items-start animate-reveal opacity-50">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border bg-gradient-to-br from-teal-400 to-teal-600 border-teal-500">
+                                        <div className="text-sm font-display font-black relative">
+                                            <span className="text-white leading-none uppercase">W</span>
+                                            <span className="text-navy-900 leading-none absolute left-[82%] bottom-0">.</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <LoadingDots color="gray" size="sm" />
+                                    </div>
+                                </div>
+                            )}
+
+                            <div ref={messagesEndRef} />
+                        </div>
+                    </div>
+
+                    {/* Input Area */}
+                    <div className="border-t border-navy-100 bg-white/80 backdrop-blur-sm z-10 px-8 py-6">
+                        <div className="max-w-3xl mx-auto">
+                            <div className="relative">
+                                <textarea
+                                    ref={inputRef}
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Brief your agent architect..."
+                                    disabled={isThinking || isComplete || isDeployed}
+                                    className="w-full min-h-[56px] max-h-[200px] bg-white border border-navy-100 rounded-2xl px-6 py-4 pr-16 text-sm text-navy-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500/50 resize-none disabled:bg-navy-50 disabled:text-navy-400 shadow-premium-sm transition-all"
+                                />
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={!input.trim() || isThinking || isComplete || isDeployed}
+                                    className={cn(
+                                        "absolute bottom-3 right-3 w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                                        input.trim() && !isThinking && !isComplete && !isDeployed
+                                            ? "bg-teal-500 text-white hover:bg-teal-600 shadow-lg shadow-teal-500/20"
+                                            : "bg-navy-100 text-navy-300 cursor-not-allowed"
+                                    )}
+                                >
+                                    <ArrowRight size={18} />
+                                </button>
+                            </div>
+                            <p className="text-center text-[9px] font-bold text-navy-300 uppercase tracking-widest mt-4 opacity-60">
+                                WIBL AI ENGINE v4.2 &bull; Contextually Aware &bull; Strictly Private
                             </p>
                         </div>
-                    ) : (
-                        <>
-                            {extractedConfig.name && (
-                                <ConfigItem
-                                    label="Agent Name"
-                                    value={extractedConfig.name}
-                                    icon="✨"
-                                />
-                            )}
-                            {extractedConfig.purpose && (
-                                <ConfigItem
-                                    label="Purpose"
-                                    value={extractedConfig.purpose}
-                                    icon="🎯"
-                                />
-                            )}
-                            {extractedConfig.personality && (
-                                <ConfigItem
-                                    label="Personality"
-                                    value={extractedConfig.personality}
-                                    icon="🎭"
-                                />
-                            )}
-                            {extractedConfig.channels && extractedConfig.channels.length > 0 && (
-                                <ConfigItem
-                                    label="Channels"
-                                    value={extractedConfig.channels.join(', ')}
-                                    icon="📡"
-                                />
-                            )}
-                            {extractedConfig.integrations && Object.keys(extractedConfig.integrations).length > 0 && (
-                                <ConfigItem
-                                    label="Integrations"
-                                    value={Object.keys(extractedConfig.integrations).join(', ')}
-                                    icon="🔌"
-                                />
-                            )}
-                        </>
-                    )}
+                    </div>
                 </div>
 
-                {/* Action Button */}
-                {(isComplete || phase === 'validation') && (
-                    <div className="border-t border-slate-200 p-6 bg-slate-50/50">
-                        <button
-                            onClick={handleDeploy}
-                            disabled={isDeploying || isDeployed}
-                            className={cn(
-                                "w-full py-4 font-semibold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2",
-                                isDeploying || isDeployed
-                                    ? "bg-slate-300 text-slate-500 cursor-not-allowed"
-                                    : "bg-gradient-to-r from-teal-600 to-teal-500 text-white hover:from-teal-700 hover:to-teal-600 shadow-teal-600/30"
-                            )}
-                        >
-                            {isDeploying ? (
-                                <RefreshCw className="animate-spin" size={20} />
-                            ) : (
-                                <Zap size={20} />
-                            )}
-                            {isDeploying ? 'Deploying...' : 'Deploy Agent →'}
-                        </button>
+                {/* Right Column: Config Sidebar */}
+                <div className="w-80 lg:w-96 border-l border-navy-100 bg-white flex flex-col shrink-0 hidden xl:flex">
+                    {/* Sidebar Header */}
+                    <div className="px-6 py-6 pb-2">
+                        <h2 className="text-[10px] font-black text-navy-900 uppercase tracking-[0.2em] flex items-center gap-2">
+                            Intelligence Store
+                        </h2>
+                        <p className="text-[10px] text-navy-400 font-bold uppercase tracking-tight opacity-60 mt-1">
+                            Extracted logic & personality traits
+                        </p>
                     </div>
-                )}
+
+                    {/* Config Items */}
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        {Object.keys(extractedConfig).length === 0 ? (
+                            <div className="text-center py-12 px-4">
+                                <Clock size={40} className="mx-auto text-navy-100 mb-4" />
+                                <p className="text-[11px] text-navy-300 font-bold uppercase tracking-widest">
+                                    Listening for directives...
+                                </p>
+                            </div>
+                        ) : (
+                            <>
+                                {extractedConfig.name && (
+                                    <ConfigItem
+                                        label="Agent Name"
+                                        value={extractedConfig.name}
+                                        icon="✨"
+                                    />
+                                )}
+                                {extractedConfig.purpose && (
+                                    <ConfigItem
+                                        label="Mission"
+                                        value={extractedConfig.purpose}
+                                        icon="🎯"
+                                    />
+                                )}
+                                {extractedConfig.personality && (
+                                    <ConfigItem
+                                        label="Persona"
+                                        value={extractedConfig.personality}
+                                        icon="🎭"
+                                    />
+                                )}
+                                {extractedConfig.channels && extractedConfig.channels.length > 0 && (
+                                    <ConfigItem
+                                        label="Activation"
+                                        value={extractedConfig.channels.join(', ')}
+                                        icon="📡"
+                                    />
+                                )}
+                                {extractedConfig.integrations && Object.keys(extractedConfig.integrations).length > 0 && (
+                                    <ConfigItem
+                                        label="Neural Links"
+                                        value={Object.keys(extractedConfig.integrations).join(', ')}
+                                        icon="🔌"
+                                    />
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    {/* Action Button */}
+                    {(isComplete || phase === 'validation' || phase === 'complete') && (
+                        <div className="border-t border-navy-100 p-6 bg-navy-50/30">
+                            <button
+                                onClick={handleDeploy}
+                                disabled={isDeploying || isDeployed}
+                                className={cn(
+                                    "w-full py-4 font-black text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-premium flex items-center justify-center gap-3",
+                                    isDeploying || isDeployed
+                                        ? "bg-navy-100 text-navy-300 cursor-not-allowed"
+                                        : "bg-teal-500 text-white hover:bg-teal-600 shadow-teal-500/20 active:scale-95"
+                                )}
+                            >
+                                {isDeploying ? (
+                                    <RefreshCw className="animate-spin" size={18} />
+                                ) : (
+                                    <Zap size={18} />
+                                )}
+                                {isDeploying ? 'Deploying...' : 'Activate Agent'}
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
+
+            <style jsx global>{`
+                @keyframes spin-slow {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .animate-spin-slow {
+                    animation: spin-slow 8s linear infinite;
+                }
+                @keyframes logo-pulsate {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+                .animate-logo-pulsate {
+                    animation: logo-pulsate 4s ease-in-out infinite;
+                }
+                @keyframes pulse-soft {
+                    0%, 100% { transform: scale(1); opacity: 0.1; }
+                    50% { transform: scale(1.1); opacity: 0.15; }
+                }
+                .animate-pulse-soft {
+                    animation: pulse-soft 4s ease-in-out infinite;
+                }
+            `}</style>
         </div>
     );
 }
