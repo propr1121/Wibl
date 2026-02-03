@@ -102,13 +102,11 @@ Handles:
 - Error handling
 - State retrieval
 
-### 4. **Conversational UI** (Next to build)
-
-Will replace current stepped wizard with:
-- Chat interface (like Claude's UI)
-- Real-time config extraction sidebar
-- Intelligent progress tracking
-- Agent preview
+### 4. **Conversational UI** (`/builder`)
+The entry point is a dedicated, full-screen conversational interface. It is purposefully kept outside the main dashboard layout to maximize focus and provide a premium "AI-First" immersion experience.
+- **Claude-inspired Chat**: A spacious, clean dialogue area.
+- **Real-time Configuration Sidebar**: A dynamic panel that updates as Claude extracts data.
+- **Visual Feedback**: Progress indicators and success celebrations (confetti).
 
 ---
 
@@ -116,10 +114,6 @@ Will replace current stepped wizard with:
 
 ### Conversation Flow
 
-1. **User starts wizard**
-   - Frontend generates session ID
-   - Calls `/api/wizard/chat` with no message
-   - AI greets user and starts discovery
 
 2. **Natural back-and-forth**
    - User types naturally (not constrained to form fields)
@@ -208,35 +202,36 @@ Throughout this, the AI is extracting:
 
 ## Implementation Phases
 
-### ✅ Phase 1: Foundation (DONE)
+### ✅ Phase 1: Foundation (COMPLETE)
 - [x] AI wizard engine with Claude integration
 - [x] Wibl knowledge base system prompt
 - [x] Chat API endpoint with session management
 - [x] Data extraction logic
 
-### 🔄 Phase 2: UI Transformation (NEXT)
-- [ ] Replace stepped wizard with chat interface
-- [ ] Real-time config extraction sidebar
-- [ ] Intelligent progress indicator
-- [ ] Preview panel
+### ✅ Phase 2: UI Transformation (COMPLETE)
+- [x] Replace stepped wizard with chat interface (`/agents/new-ai`)
+- [x] Real-time config extraction sidebar
+- [x] Intelligent progress tracking (Phase-based)
+- [x] **Bonus**: Full deployment integration with celebrate/success flow
 
-### 📊 Phase 3: Knowledge Bank
-- [ ] Database for successful configurations
-- [ ] Pattern recognition from past conversations
-- [ ] Industry-specific templates
-- [ ] Confidence scoring
+### 🔄 Phase 3: Knowledge Bank (NEXT)
+- [ ] Database persistence for successful configurations
+- [ ] Conversation history logging for training
+- [ ] Pattern recognition from past interactions
+- [ ] Industry-specific template generation
+- [ ] Confidence scoring logic
 
 ### 🎓 Phase 4: Learning Loop
-- [ ] Feedback collection (did agent work well?)
-- [ ] Automatic knowledge base updates
+- [ ] Post-deployment feedback collection
+- [ ] Automated knowledge base updates (RAG-lite)
 - [ ] A/B testing different conversation strategies
-- [ ] Performance analytics
+- [ ] Creation-to-Performance analytics
 
 ### 🔮 Phase 5: Advanced Intelligence
-- [ ] Multi-agent configuration in one conversation
-- [ ] Proactive suggestions based on industry
-- [ ] Automated optimization recommendations
-- [ ] Predictive use case detection
+- [ ] Multi-agent orchestrator configuration
+- [ ] Proactive industry logic suggestions
+- [ ] Predictive intent detection
+- [ ] Automated security & compliance auditing
 
 ---
 

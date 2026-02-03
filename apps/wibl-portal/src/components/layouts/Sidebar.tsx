@@ -52,15 +52,21 @@ export function Sidebar({
 }: SidebarProps) {
     const pathname = usePathname();
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [mounted, setMounted] = React.useState(false);
     const [now, setNow] = React.useState(new Date());
 
     React.useEffect(() => {
+        setMounted(true);
         const timer = setInterval(() => setNow(new Date()), 60000);
         return () => clearInterval(timer);
     }, []);
 
-    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const dateString = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const timeString = mounted
+        ? now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : '';
+    const dateString = mounted
+        ? now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })
+        : '';
 
     // Mock user data - replace with real auth data
     const user = {

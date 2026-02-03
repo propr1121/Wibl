@@ -23,7 +23,7 @@ export interface AgentConfig {
     purpose?: string;
     description?: string;
     personality?: 'professional' | 'friendly' | 'casual' | 'custom';
-    customPersonality?: string;
+    personalityDetail?: string;
     knowledgeSources?: Array<{
         type: 'url' | 'text' | 'file';
         content: string;
@@ -34,6 +34,8 @@ export interface AgentConfig {
     escalationRules?: string;
     handoffEnabled?: boolean;
     responseTime?: 'instant' | 'natural';
+    responseStyle?: 'conversational' | 'concise' | 'technical';
+    safetySettings?: string[];
     integrations?: {
         calendar?: string;
         crm?: string;
@@ -161,8 +163,13 @@ Format:
 {
   "name": "...",
   "purpose": "...",
+  "description": "...",
+  "personality": "friendly|professional|casual|custom",
+  "personalityDetail": "...",
   "channels": ["whatsapp", "web"],
-  etc.
+  "responseStyle": "conversational|concise|technical",
+  "safetySettings": ["redaction", "validation", "sandbox"],
+  "integrations": { "calendar": "...", "crm": "...", "payment": "..." }
 }`;
 
         try {

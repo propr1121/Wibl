@@ -97,7 +97,7 @@ export default function AgentsPage() {
                         Manage <span className="text-gradient">Workforce.</span>
                     </h1>
                 </div>
-                <Link href="/agents/new">
+                <Link href="/builder">
                     <Button
                         variant="primary"
                         size="lg"
@@ -160,7 +160,7 @@ export default function AgentsPage() {
                             <p className="text-navy-500 font-medium mb-8 max-w-sm mx-auto">
                                 Bring your first AI assistant to life using our premium creation wizard.
                             </p>
-                            <Link href="/agents/new">
+                            <Link href="/builder">
                                 <Button variant="primary" size="lg" leftIcon={<Plus size={20} />} className="shadow-premium">
                                     Create New Agent
                                 </Button>

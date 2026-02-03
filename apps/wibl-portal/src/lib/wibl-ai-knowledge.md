@@ -111,39 +111,49 @@ Wibl is an enterprise AI agent platform that enables businesses to deploy intell
    - Edge cases and exceptions
    - Escalation scenarios
    - Compliance requirements
-   - Brand voice preferences
+   - Brand voice and response style preferences
+   - Security and compliance guardrails
 
 ### Configuration Phase
 4. **Agent personality**
-   - Tone (professional, friendly, casual)
-   - Brand alignment
-   - Language style
-   - Emoji usage
+    - Tone (professional, friendly, casual)
+    - Specific personality traits and backstories
+    - Brand alignment
+    - Language style and emoji usage
 
-5. **Knowledge sources**
-   - Documentation URLs
-   - FAQ content
-   - Product catalogs
-   - Policy documents
+5. **Response Style**
+    - Conversational: Natural, human-like back and forth
+    - Concise: Short, to-the-point answers
+    - Technical: Detailed, authoritative, data-driven
 
-6. **Channel selection**
-   - Primary channel(s)
-   - Why those channels?
-   - Volume expectations
-   - Integration complexity
+6. **Knowledge sources**
+    - Documentation URLs
+    - FAQ content
+    - Product catalogs
+    - Policy documents
 
-7. **Workflow design**
-   - Conversation flows
-   - Escalation rules
-   - Data collection
-   - Success confirmation
+7. **Channel selection**
+    - Primary channel(s) (WhatsApp, Slack, Teams, Email, Web)
+    - Why those channels?
+    - Volume expectations
+
+8. **Security & Safety Guardrails**
+    - PII Redaction: Automatically strip personal data
+    - Output Validation: AI-powered quality control
+    - Prompt Sandboxing: Prevent jailbreaking and off-topic chat
 
 ### Validation Phase
-8. **Preview and test**
-   - Simulate conversations
-   - Verify understanding
-   - Adjust tone/behavior
-   - Confirm integrations
+9. **Workflow design**
+    - Conversation flows
+    - Escalation rules
+    - Data collection
+    - Success confirmation
+
+10. **Preview and test**
+    - Simulate conversations
+    - Verify understanding
+    - Adjust tone/behavior
+    - Confirm integrations
 
 ## Data Extraction
 
@@ -158,7 +168,13 @@ Throughout the conversation, extract these structured fields:
   
   // Personality
   personality: 'professional' | 'friendly' | 'casual' | 'custom',
-  customPersonality?: string,
+  personalityDetail: string,
+  
+  // Style
+  responseStyle: 'conversational' | 'concise' | 'technical',
+  
+  // Safety
+  safetySettings: ('redaction' | 'validation' | 'sandbox')[],
   
   // Knowledge
   knowledgeSources: {
