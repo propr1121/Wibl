@@ -243,7 +243,7 @@ export default function AIAgentBuilder() {
                         isThinking ? "animate-spin-slow opacity-100 scale-110 border-solid border-teal-400/40" : "opacity-40"
                     )} />
 
-                    <div className="w-40 h-40 lg:w-52 lg:h-52 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 p-1.5 shadow-[0_0_100px_rgba(0,242,234,0.12)] relative z-10 flex items-center justify-center transition-all duration-500 hover:animate-logo-pulsate">
+                    <div className="w-40 h-40 lg:w-52 lg:h-52 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 p-1.5 shadow-[0_0_100px_rgba(0,242,234,0.12)] relative z-10 flex items-center justify-center transition-all duration-500 logo-pulsate-hover">
                         <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-16 lg:p-20">
                             <div className="text-4xl lg:text-5xl font-display font-black relative">
                                 <span className="text-teal-500 leading-none uppercase">W</span>
@@ -338,9 +338,9 @@ export default function AIAgentBuilder() {
                                         {message.role === 'user' ? (
                                             <span className="text-[10px] font-bold text-white">ME</span>
                                         ) : (
-                                            <div className="text-sm font-display font-black relative">
+                                            <div className="text-sm font-display font-black relative leading-none">
                                                 <span className="text-white leading-none uppercase">W</span>
-                                                <span className="text-navy-900 leading-none absolute left-[82%] bottom-0">.</span>
+                                                <span className="text-navy-900 leading-none absolute left-[88%] bottom-[-0.5px]">.</span>
                                             </div>
                                         )}
                                     </div>
@@ -361,9 +361,9 @@ export default function AIAgentBuilder() {
                             {isThinking && (
                                 <div className="flex gap-4 items-start animate-reveal opacity-50">
                                     <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm border bg-gradient-to-br from-teal-400 to-teal-600 border-teal-500">
-                                        <div className="text-sm font-display font-black relative">
+                                        <div className="text-sm font-display font-black relative leading-none">
                                             <span className="text-white leading-none uppercase">W</span>
-                                            <span className="text-navy-900 leading-none absolute left-[82%] bottom-0">.</span>
+                                            <span className="text-navy-900 leading-none absolute left-[88%] bottom-[-0.5px]">.</span>
                                         </div>
                                     </div>
                                     <div className="mt-4">
@@ -600,6 +600,19 @@ function SuccessOverlay({ name }: { name: string }) {
                     0% { transform: scale(1); opacity: 0.3; }
                     100% { transform: scale(1.6); opacity: 0; }
                 }
+                @keyframes spin-slow {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                @keyframes logo-pulsate {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.04); }
+                    100% { transform: scale(1); }
+                }
+                .logo-pulsate-hover:hover { 
+                    animation: logo-pulsate 3s ease-in-out infinite; 
+                }
+                .animate-spin-slow { animation: spin-slow 8s linear infinite; }
                 .animate-fade-in { animation: fade-in 0.5s ease-out; }
                 .animate-reveal { animation: reveal 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
                 .animate-bounce-subtle { animation: bounce-subtle 3s ease-in-out infinite; }
