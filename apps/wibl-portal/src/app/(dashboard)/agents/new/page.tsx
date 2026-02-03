@@ -151,7 +151,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 const WIZARD_FLOW: Step[] = [
     {
         id: 'purpose',
-        wiblMessage: "Let's bring your AI agent to life. What's the core mission? Describe the task they'll focus on.",
+        wiblMessage: "Let's bring your AI agent to life. What's the core mission?\n\nDescribe the task they'll focus on.",
         inputType: 'textarea',
         placeholder: "e.g., Handle customer refunds, schedule viewings via Google Calendar, or manage a waitlist...",
         validation: { minLength: 10 },
@@ -540,14 +540,12 @@ export default function AgentWizardPage() {
                                 </div>
 
                                 <div className={cn(
-                                    "px-6 py-4 rounded-2xl text-[15px] font-medium leading-relaxed tracking-tight shadow-premium-sm transition-all hover:shadow-premium-md",
+                                    "px-6 py-4 rounded-2xl text-sm font-normal leading-relaxed shadow-premium-sm transition-all hover:shadow-premium-md whitespace-pre-line",
                                     msg.role === 'user'
                                         ? "bg-navy-900 text-white"
-                                        : "bg-white/80 text-navy-800 border border-wibl-teal/20 backdrop-blur-md relative overflow-hidden group/bubble"
+                                        : "bg-white/80 text-navy-700 border border-navy-100 backdrop-blur-sm"
                                 )}>
-                                    {msg.role === 'wibl' && (
-                                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-wibl-teal to-transparent opacity-50" />
-                                    )}
+                                    {/* Gradient accent removed for cleaner look */}
                                     {msg.content}
                                 </div>
                             </div>
@@ -558,8 +556,8 @@ export default function AgentWizardPage() {
                                 <div className="w-10 h-10 rounded-xl bg-white border border-navy-100 flex items-center justify-center text-navy-900 font-display font-black text-xs shrink-0 shadow-sm">
                                     <span className="text-wibl-teal">W</span>.
                                 </div>
-                                <div className="px-5 py-3 rounded-2xl bg-white border border-wibl-teal/10 shadow-premium-sm">
-                                    <LoadingDots />
+                                <div className="px-4 py-3 rounded-2xl bg-white border border-navy-100 shadow-sm">
+                                    <LoadingDots color="gray" size="sm" />
                                 </div>
                             </div>
                         )}
@@ -576,6 +574,7 @@ export default function AgentWizardPage() {
                                         placeholder={WIZARD_FLOW[state.currentStepIndex].placeholder}
                                         onSubmit={handleUserInput}
                                         context={state.context}
+                                        currentStepId={WIZARD_FLOW[state.currentStepIndex].id}
                                     />
                                 </div>
                             )}
@@ -591,6 +590,7 @@ export default function AgentWizardPage() {
                                 placeholder={WIZARD_FLOW[state.currentStepIndex].placeholder}
                                 onSubmit={handleUserInput}
                                 context={state.context}
+                                currentStepId={WIZARD_FLOW[state.currentStepIndex].id}
                             />
                             <p className="text-center text-[10px] font-bold text-navy-300 uppercase tracking-[0.2em] opacity-60">
                                 Wibl. uses secure AI to help build your perfect agent experience.
@@ -663,51 +663,177 @@ function WizardInput({
     options,
     placeholder,
     onSubmit,
-    context
+    context,
+    currentStepId // Add this parameter
 }: {
     type: InputType,
     options?: WizardOption[],
     placeholder?: string,
     onSubmit: (val: any, display?: string) => void,
-    context: WizardContext
+    context: WizardContext,
+    currentStepId?: string  // Add this type
 }) {
     const [value, setValue] = useState<any>('');
 
     if (type === 'textarea') {
         const [text, setText] = useState('');
+        const [validation, setValidation] = useState<{
+            isValid: boolean;
+            feedback?: string;
+            suggestions?: string[];
+        } | null>(null);
+        const [isValidating, setIsValidating] = useState(false);
+        const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+        // Debounced AI validation
+        const validateInput = async (input: string) => {
+            if (input.trim().length < 10) {
+                setValidation(null);
+                return;
+            }
+
+            setIsValidating(true);
+
+            try {
+                // Call AI validation endpoint
+                const response = await fetch('/api/wizard/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        stepId: currentStepId, // Use the passed parameter
+                        input: input.trim()
+                    })
+                });
+
+                const result = await response.json();
+                setValidation(result);
+            } catch (error) {
+                console.error('Validation failed:', error);
+                // Fail open - don't block user
+                setValidation({ isValid: true });
+            } finally {
+                setIsValidating(false);
+            }
+        };
+
+        const handleTextChange = (value: string) => {
+            setText(value);
+
+            // Clear previous timer
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+
+            // Debounce validation (wait 1s after user stops typing)
+            debounceTimerRef.current = setTimeout(() => {
+                validateInput(value);
+            }, 1000);
+        };
+
+        const handleSubmit = () => {
+            if (text.length < 10) return;
+
+            // Check validation before submitting
+            if (validation && !validation.isValid) {
+                // Show feedback prominently
+                return;
+            }
+
+            onSubmit(text);
+        };
+
+        const canSubmit = text.length >= 10 && (!validation || validation.isValid);
+
         return (
-            <div className="relative group">
-                <div className="absolute inset-x-0 -inset-y-10 bg-wibl-teal/5 blur-[80px] opacity-0 group-focus-within:opacity-100 transition-opacity duration-1000" />
-                <textarea
-                    autoFocus
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder={placeholder}
-                    className="w-full min-h-[90px] h-24 bg-white/95 border border-navy-100/60 p-5 px-6 pr-32 text-base font-normal text-navy-800 placeholder:text-navy-300 rounded-2xl shadow-premium-lg focus:ring-4 focus:ring-wibl-teal/5 focus:border-wibl-teal/30 outline-none transition-all resize-none block backdrop-blur-md"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey && text.length >= 10) {
-                            e.preventDefault();
-                            onSubmit(text);
-                        }
-                    }}
-                />
-                <div className="absolute bottom-6 right-8 flex items-center gap-6">
-                    <span className="text-[10px] font-black text-navy-300 uppercase tracking-[0.25em] opacity-0 group-focus-within:opacity-100 transition-all duration-500 translate-x-2 group-focus-within:translate-x-0">
-                        ENTER
-                    </span>
-                    <button
-                        onClick={() => onSubmit(text)}
+            <div className="relative">
+                {/* Removed gradient glow for cleaner look */}
+                <div className="relative">
+                    <textarea
+                        autoFocus
+                        value={text}
+                        onChange={(e) => handleTextChange(e.target.value)}
+                        placeholder={placeholder}
                         className={cn(
-                            "w-12 h-12 p-0 rounded-2xl shadow-premium-lg flex items-center justify-center transform active:scale-90 transition-all duration-300 outline-none text-white",
-                            text.length > 0 ? "bg-wibl-teal shadow-glow-teal" : "bg-navy-900 opacity-40",
-                            text.length < 10 && text.length > 0 ? "opacity-60 cursor-not-allowed" : ""
+                            "w-full min-h-[120px] bg-white border p-5 px-6 pr-14 text-[15px] font-normal text-navy-800 placeholder:text-navy-400 rounded-2xl shadow-sm focus:ring-2 focus:border-transparent outline-none transition-all resize-none",
+                            validation && !validation.isValid
+                                ? "border-wibl-coral/60 focus:ring-wibl-coral/20"
+                                : "border-navy-200 focus:ring-wibl-teal/20"
                         )}
-                        disabled={text.length < 10}
-                        aria-label="Continue"
-                    >
-                        <ArrowRight size={22} className={cn("transition-transform", text.length >= 10 && "group-hover:translate-x-1")} />
-                    </button>
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey && canSubmit) {
+                                e.preventDefault();
+                                handleSubmit();
+                            }
+                        }}
+                    />
+                    {/* Send button - smaller, cleaner, bottom-right corner like Claude */}
+                    <div className="absolute bottom-3 right-3 flex items-center gap-3">
+                        {isValidating && (
+                            <div className="flex items-center gap-1.5 text-[10px] font-medium text-navy-400">
+                                <LoadingDots />
+                                <span>Checking</span>
+                            </div>
+                        )}
+                        <button
+                            onClick={handleSubmit}
+                            className={cn(
+                                "w-8 h-8 p-0 rounded-lg flex items-center justify-center transform active:scale-95 transition-all duration-200 outline-none",
+                                canSubmit
+                                    ? "bg-wibl-teal text-white hover:bg-wibl-teal/90"
+                                    : "bg-navy-100 text-navy-300 cursor-not-allowed"
+                            )}
+                            disabled={!canSubmit}
+                            aria-label="Continue"
+                        >
+                            <ArrowRight size={16} className="transition-transform" />
+                        </button>
+                    </div>
                 </div>
+
+                {/* Validation Feedback */}
+                {validation && !validation.isValid && (
+                    <div className="mt-3 animate-reveal">
+                        <div className="bg-wibl-coral/5 border border-wibl-coral/20 rounded-xl p-3.5">
+                            <div className="flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-full bg-wibl-coral/10 flex items-center justify-center shrink-0 mt-0.5">
+                                    <HelpCircle size={14} className="text-wibl-coral" />
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-[13px] font-medium text-navy-700 mb-2">
+                                        {validation.feedback}
+                                    </p>
+                                    {validation.suggestions && validation.suggestions.length > 0 && (
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-semibold text-navy-400 uppercase tracking-wide">
+                                                Try something like:
+                                            </p>
+                                            {validation.suggestions.map((suggestion, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => {
+                                                        setText(suggestion);
+                                                        handleTextChange(suggestion);
+                                                    }}
+                                                    className="block w-full text-left text-[13px] text-wibl-teal hover:text-wibl-teal/80 transition-colors font-normal"
+                                                >
+                                                    → {suggestion}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Success Indicator */}
+                {validation && validation.isValid && text.length >= 15 && (
+                    <div className="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-wibl-teal animate-reveal">
+                        <CheckCircle2 size={12} />
+                        <span>Looks good</span>
+                    </div>
+                )}
             </div>
         );
     }
