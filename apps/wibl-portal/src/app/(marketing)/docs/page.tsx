@@ -105,7 +105,7 @@ export default function DocsPage() {
 
                     <div className="flex items-center gap-4">
                         <Link href="/login" className="text-sm font-bold text-navy-600 hover:text-wibl-teal transition-colors">Login</Link>
-                        <Link href="/agents/new">
+                        <Link href="/builder">
                             <Button variant="primary" size="sm">New Agent</Button>
                         </Link>
                         <button className="md:hidden p-2 text-navy-800" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>

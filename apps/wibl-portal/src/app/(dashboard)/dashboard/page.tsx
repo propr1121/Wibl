@@ -156,7 +156,7 @@ export default function DashboardPage() {
                     </p>
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
-                    <Link href="/agents/new">
+                    <Link href="/builder">
                         <Button
                             variant="primary"
                             size="lg"
@@ -437,7 +437,7 @@ export default function DashboardPage() {
                             <div className="py-20 text-center bg-navy-50/30 rounded-[28px] border-2 border-dashed border-navy-100">
                                 <Bot size={40} className="text-navy-200 mx-auto mb-4" />
                                 <p className="text-sm font-black text-navy-400 uppercase tracking-widest">No agents deployed</p>
-                                <Link href="/agents/new">
+                                <Link href="/builder">
                                     <Button variant="primary" size="sm" className="mt-4">Build your first agent</Button>
                                 </Link>
                             </div>

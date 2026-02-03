@@ -75,6 +75,20 @@ export class WiblAIWizard {
     }> {
         // Add user message to history if provided
         if (userMessage) {
+            // 1. Pre-process for gibberish/keyboard mashing
+            if (this.isGibberish(userMessage)) {
+                const rejection = "I'm sorry, I couldn't quite catch that. To build the perfect agent, I need a clear description of its core task. What will your agent be focusing on?";
+                this.conversationHistory.push({ role: 'user', content: userMessage });
+                this.conversationHistory.push({ role: 'assistant', content: rejection });
+
+                return {
+                    message: rejection,
+                    extractedData: {},
+                    isComplete: false,
+                    phase: 'discovery'
+                };
+            }
+
             this.conversationHistory.push({
                 role: 'user',
                 content: userMessage,
@@ -229,6 +243,29 @@ Format:
             isComplete: this.checkCompleteness(this.extractedConfig),
             currentPhase: this.determinePhase(this.extractedConfig) as any,
         };
+    }
+
+    /**
+     * Detects if a message is likely gibberish or keyboard mashing
+     */
+    private isGibberish(text: string): boolean {
+        const clean = text.trim().toLowerCase();
+        if (clean.length < 3) return false;
+
+        // 1. Check for long sequences of the same character (e.g. "aaaaa")
+        if (/(.)\1{4,}/.test(clean)) return true;
+
+        // 2. Check for common keyboard mashing patterns (e.g. "asdfgh")
+        const mashPatterns = ['asdf', 'qwer', 'zxcv', 'jkl;', 'bnm,', 'knkk'];
+        if (mashPatterns.some(p => clean.includes(p))) return true;
+
+        // 3. Simple entropy check: Too many consonants in a row
+        if (/[bcdfghjklmnpqrstvwxyz]{6,}/.test(clean)) return true;
+
+        // 4. Random noise check (no vowels in a longish string)
+        if (clean.length > 6 && !/[aeiouy]/.test(clean)) return true;
+
+        return false;
     }
 
     /**

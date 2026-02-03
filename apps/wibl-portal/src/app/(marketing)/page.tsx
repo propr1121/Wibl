@@ -106,7 +106,7 @@ function Navbar() {
                     <Link href="#pricing" className="text-sm font-bold text-navy-600 hover:text-wibl-teal transition-colors">Pricing</Link>
                     <div className="h-4 w-px bg-navy-100" />
                     <Link href="/login" className="text-sm font-bold text-navy-600 hover:text-wibl-teal transition-colors">Log In</Link>
-                    <Link href="/agents/new">
+                    <Link href="/builder">
                         <Button variant="primary" size="sm">Get Started</Button>
                     </Link>
                 </div>
@@ -125,7 +125,7 @@ function Navbar() {
                     <Link href="#pricing" className="block text-lg font-bold text-navy-800" onClick={() => setMobileMenuOpen(false)}>Pricing</Link>
                     <hr className="border-navy-50" />
                     <Link href="/login" className="block text-lg font-bold text-navy-800">Log In</Link>
-                    <Link href="/agents/new">
+                    <Link href="/builder">
                         <Button variant="primary" className="w-full">Get Started</Button>
                     </Link>
                 </div>
@@ -167,7 +167,7 @@ function Hero() {
                         Create intelligent assistants by simply describing what you need. Deploy to Web, WhatsApp, and Slack in minutes. Simply connected.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/agents/new">
+                        <Link href="/builder">
                             <Button variant="coral" size="lg" className="h-16 text-lg group btn-shine">
                                 Start Building Free
                                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />

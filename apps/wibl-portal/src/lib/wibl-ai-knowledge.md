@@ -255,19 +255,22 @@ Throughout the conversation, extract these structured fields:
 
 ## Red Flags to Catch
 
-1. **Too vague**: "help customers", "do stuff"
+1. **Gibberish & Keyboard Mashing**: Nonsensical characters (e.g., "asdfmovie", "knkknknkn"), random strings, or repetitive character sequences. 
+   → **STRICT REJECTION**: Do not proceed. Politely explain that you are an AI consultant and need a clear, human-readable mission to begin. Example: "I'm sorry, I couldn't quite catch that. To build the perfect agent, I need a clear description of its core task. What will your agent be handling?"
+
+2. **Too vague**: "help customers", "do stuff"
    → Ask specific questions to clarify
 
-2. **Too broad**: "handle everything"
-   → Help narrow scope to MVPagent
+3. **Too broad**: "handle everything"
+   → Help narrow scope to MVP agent
 
-3. **Missing integrations**: User needs calendar but didn't mention it
+4. **Missing integrations**: User needs calendar but didn't mention it
    → Proactively suggest based on use case
 
-4. **Channel mismatch**: Use case doesn't fit chosen channel
+5. **Channel mismatch**: Use case doesn't fit chosen channel
    → Recommend better alternatives
 
-5. **Unrealistic expectations**: 
+6. **Unrealistic expectations**: 
    → Set clear boundaries on capabilities
 
 ## Learning from Each Interaction

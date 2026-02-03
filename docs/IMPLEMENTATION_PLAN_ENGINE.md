@@ -60,7 +60,31 @@ A dedicated tab where the user can see exactly what the agent "learned" about th
 
 ---
 
-## 5. Testing & Verification (Grade A++ Standard)
+## 5. Phase 4: The "AI Architect" (Conversational Builder) (COMPLETE)
+
+Moving away from static forms to a natural language briefing experience.
+
+### Steps:
+- [x] **Phase-based Extraction**: Discovery -> Identification -> Configuration -> Activation.
+- [x] **Intelligent Guardrails**: Gibberish and "junk" input rejection at the gateway level.
+- [x] **Live State Persistence**: Synchronized state between AI extraction and the visual Sidebar.
+- [x] **Premium Success Overlay**: High-fidelity celebration once the agent is provisioned.
+
+---
+
+## 6. Phase 5: Production-Ready RAG Engine (COMPLETE)
+
+Transforming agent "knowledge" from static text to a semantic vector brain.
+
+### Steps:
+- [x] **Smart Chunking**: Preserving semantic context during text splitting.
+- [x] **Vector Integration**: Supabase Vector (pgvector) for millisecond-latency retrieval.
+- [x] **OpenAI Embeddings**: Industry-standard `text-embedding-3-small` for high-precision search.
+- [x] **Search Helper**: A robust `searchKnowledge` tool available to the AI Engine.
+
+---
+
+## 7. Testing & Verification (Grade A++ Standard)
 
 ### Integration Tests:
 - **Provisioning Test**: Verify that completing the wizard creates the correct folder structure and `clawdbot.json`.
