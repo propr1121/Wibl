@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Sparkles, CheckCircle2, Clock, Zap, Check, LayoutDashboard, RefreshCw, X, Telescope } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
 import { cn } from '@/lib/utils';
 import { LoadingDots } from '@/components/ui/loading-dots';
@@ -544,6 +545,24 @@ function ConfigItem({ label, value, icon }: { label: string; value: string; icon
 }
 
 function SuccessOverlay({ name }: { name: string }) {
+    const router = useRouter();
+    const [countdown, setCountdown] = useState(3);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCountdown((prev) => {
+                if (prev <= 1) {
+                    clearInterval(timer);
+                    router.push('/dashboard');
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [router]);
+
     return (
         <div className="absolute inset-0 bg-white/95 backdrop-blur-xl z-[100] flex items-center justify-center animate-fade-in overflow-hidden">
             <div className="max-w-md w-full text-center px-10 animate-reveal">
@@ -564,6 +583,9 @@ function SuccessOverlay({ name }: { name: string }) {
                     </h2>
                     <p className="text-slate-600 font-medium text-lg leading-relaxed">
                         Your AI agent is now provisioned, secured, and ready for deployment.
+                    </p>
+                    <p className="text-navy-300 text-[10px] font-bold uppercase tracking-[0.2em] animate-pulse">
+                        Auto-redirecting in {countdown}s...
                     </p>
                 </div>
 

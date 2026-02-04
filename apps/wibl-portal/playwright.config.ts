@@ -6,6 +6,7 @@ export default defineConfig({
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
     workers: 1, // Single worker for E2E to avoid conflicts
+    outputDir: 'test-results/artifacts',
     reporter: [
         ['html', { outputFolder: 'test-results/html-report' }],
         ['list'],

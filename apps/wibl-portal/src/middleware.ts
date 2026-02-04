@@ -1,9 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 
-export async function proxy(request: NextRequest) {
-    // Bypassing Supabase check for local testing if variables are missing
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+export async function middleware(request: NextRequest) {
+    // Bypassing Supabase check for local testing if variables are missing or use placeholders
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const isPlaceholder = supabaseUrl?.includes('placeholder.supabase.co') || !supabaseUrl;
+
+    if (isPlaceholder || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.includes('placeholder')) {
         return NextResponse.next();
     }
 

@@ -129,13 +129,12 @@ test.describe('Wibl AI Architect - Conversational Flow', () => {
         const successTitle = page.locator('text=/is Live/i');
         await expect(successTitle).toBeVisible({ timeout: 15000 });
 
+        // Verify auto-redirect countdown text exists
+        await expect(page.locator('text=/Auto-redirecting in/i')).toBeVisible();
+
         await page.screenshot({ path: 'test-results/audit/04-deployment-success.png' });
 
-        // Click Go to Dashboard
-        const dashboardBtn = page.getByRole('button', { name: /go to dashboard/i });
-        await dashboardBtn.click();
-
-        // Final landing on dashboard
+        // Final landing on dashboard via auto-redirect
         await page.waitForURL(/\/dashboard/, { timeout: 10000 });
 
         await page.screenshot({ path: 'test-results/audit/05-dashboard-final.png' });
